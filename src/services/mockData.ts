@@ -1,0 +1,366 @@
+import type {
+  StoreConfig,
+  SmsThread,
+  CdrRecord,
+  SuppressedEvent,
+  OptOutRecord,
+  DailyTrendPoint,
+} from '../types';
+import { ThreadStatus, SuppressedReason } from '../types';
+
+export const INITIAL_STORES: StoreConfig[] = [
+  {
+    _id: '6a9ea2774d7dcfbae9cc58b6',
+    did: '0872286100',
+    storeName: 'Mister Minit Westfield Doncaster',
+    address: 'Kiosk 204 Westfield, 297 Diagonal Rd, Oaklands Park SA 5046',
+    tradingHours: 'Mon-Wed & Fri 9:00am–5:30pm, Thu 9:00am–9:00pm, Sat 9:00am–5:00pm, Sun 11:00am–5:00pm',
+    googleMapsLink: 'https://goo.gl/maps/example',
+    staffContacts: [
+      {
+        name: 'Jane Smith',
+        mobile: '0412345678',
+        email: 'jane@misterminit.com.au',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:35.990Z',
+    updatedAt: '2026-09-09T06:32:36.907Z',
+  },
+  {
+    _id: '6a9ea2784d7dcfbae9cc58b7',
+    did: '09821200012062',
+    storeName: 'Enex Pert',
+    address: 'Shop ST105 Level 1 Enex Perth, 100 St Georges Terrace, Perth WA 6000',
+    tradingHours: 'Mon-Fri 9:00am–6:00pm, Sat: close, Sun: close',
+    googleMapsLink: 'https://maps.app.goo.gl/5j7dSUxQt9X8NCJk9',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '61892260988',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:36.196Z',
+    updatedAt: '2026-09-07T11:39:36.196Z',
+  },
+  {
+    _id: '6a9ea2784d7dcfbae9cc58b8',
+    did: '61892260988',
+    storeName: 'Enex Pert',
+    address: 'Shop ST105 Level 1 Enex Perth, 100 St Georges Terrace, Perth WA 6000',
+    tradingHours: 'Mon-Fri 9:00am–6:00pm, Sat: close, Sun: close',
+    googleMapsLink: 'https://maps.app.goo.gl/5j7dSUxQt9X8NCJk9',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '61892260988',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:36.400Z',
+    updatedAt: '2026-09-07T11:39:36.400Z',
+  },
+  {
+    _id: '6a9ea2784d7dcfbae9cc58b9',
+    did: '61370360442',
+    storeName: 'Traralgon',
+    address: 'Traralgon Centre Plaza, 166-188 Franklin St, Traralgon VIC 3844',
+    tradingHours: 'Mon-Wed 9:00am–5:30pm, Thu-Fri 9:00am–9:00pm, Sat 10:00am–4:00pm, Sun 9:00am–5:30pm',
+    googleMapsLink: 'https://maps.app.goo.gl/owu1zetaT69DSidj7',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '61370360442',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:36.599Z',
+    updatedAt: '2026-09-07T11:39:36.599Z',
+  },
+  {
+    _id: '6a9ea2784d7dcfbae9cc58ba',
+    did: '09821200012620',
+    storeName: 'Traralgon',
+    address: 'Traralgon Centre Plaza, 166-188 Franklin St, Traralgon VIC 3844',
+    tradingHours: 'Mon-Wed 9:00am–5:30pm, Thu-Fri 9:00am–9:00pm, Sat 10:00am–4:00pm, Sun 9:00am–5:30pm',
+    googleMapsLink: 'https://maps.app.goo.gl/owu1zetaT69DSidj7',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '61370360442',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:36.799Z',
+    updatedAt: '2026-09-07T11:39:36.799Z',
+  },
+  {
+    _id: '6a9ea2794d7dcfbae9cc58bb',
+    did: '0370360236',
+    storeName: 'Tok H',
+    address: 'Shop 9, Tok H Centre, 459-465 Toorak Rd, Toorak VIC 3142',
+    tradingHours: 'Mon-Fri 9:00am–5:30pm, Sat 9:00am–6:00pm, Sun: 10:00 AM – 5:00 PM',
+    googleMapsLink: 'https://maps.app.goo.gl/ijzwsdcGgBVBA2he6',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '0370360236',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:37.002Z',
+    updatedAt: '2026-09-07T11:39:37.002Z',
+  },
+  {
+    _id: '6a9ea2794d7dcfbae9cc58bc',
+    did: '0863652926',
+    storeName: 'Dianella',
+    address: 'Kiosk KI001, Dianella Plaza, 366 Grand Promenade, Dianella WA 6059',
+    tradingHours: 'Mon-Wed & Fri 9:00am–5:30pm, Thu 9:00am–9:00pm, Sat 9:00am–5:00pm, Sun 11:00am–5:00pm',
+    googleMapsLink: 'https://maps.app.goo.gl/dEqT47TLtsCZt1tz6',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '0863652926',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:37.202Z',
+    updatedAt: '2026-09-07T11:39:37.202Z',
+  },
+  {
+    _id: '6a9ea2794d7dcfbae9cc58bd',
+    did: '0861868180',
+    storeName: 'The Mezz',
+    address: 'TKiosk 1/148 Scarborough Beach Rd, The Hawaiian Mezz, Mount Hawthorn WA 6016',
+    tradingHours: 'Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: close',
+    googleMapsLink: 'https://maps.app.goo.gl/6zhUNbhzGciQ98zB7',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '0861868180',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:37.401Z',
+    updatedAt: '2026-09-07T11:39:37.401Z',
+  },
+  {
+    _id: '6a9ea2794d7dcfbae9cc58be',
+    did: '0738214854',
+    storeName: 'Cleveland',
+    address: 'Shop K02/91 Middle St, Cleveland Central, Cleveland QLD 4163',
+    tradingHours: 'Mon-Wed & Fri 9:00am–5:30pm, Thu 9:00am–6:00pm, Sat 9:00am–5:00pm, Sun 10:00am–4:00pm',
+    googleMapsLink: 'https://maps.app.goo.gl/XguXLGnhb95Fftw76',
+    staffContacts: [
+      {
+        name: 'Store Contact',
+        mobile: '0738214854',
+        email: '',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-07T11:39:37.619Z',
+    updatedAt: '2026-09-07T11:39:37.619Z',
+  },
+  {
+    _id: '6aa0f6ed13a9c58e29911dae',
+    did: '123456789',
+    storeName: 'ahmed',
+    address: '123 George Street',
+    tradingHours: 'Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: Closed',
+    googleMapsLink: 'https://www.google.com/maps/dir//Rosapenna+Hotel+%26+Golf+Resort/',
+    staffContacts: [
+      {
+        name: 'muhammad Ahmed',
+        mobile: '',
+        email: 'm.ahmed.fahim02@gmail.com',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-09T06:04:29.771Z',
+    updatedAt: '2026-09-09T06:05:07.354Z',
+  },
+  {
+    _id: '6aa1008502b0fa3c6b20fae0',
+    did: '08454545454',
+    storeName: 'john',
+    address: '123 George Street',
+    tradingHours: 'Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: Closed',
+    googleMapsLink: '',
+    staffContacts: [
+      {
+        name: 'muhammad Ahmed',
+        mobile: '0412345678',
+        email: 'm.ahmed000@gmail.com',
+      },
+      {
+        name: 'hammmad',
+        mobile: '0412345699',
+        email: 'hammadak05@gmail.com',
+      },
+    ],
+    isActive: true,
+    createdAt: '2026-09-09T06:45:25.338Z',
+    updatedAt: '2026-09-09T07:10:37.729Z',
+  },
+  {
+    _id: '6aa108bb02b0fa3c6b20fae1',
+    did: '08789456321',
+    storeName: 'hammad',
+    address: '123 George Street',
+    tradingHours: 'Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: Closed',
+    googleMapsLink: '',
+    staffContacts: [],
+    isActive: true,
+    createdAt: '2026-09-09T07:20:27.924Z',
+    updatedAt: '2026-09-09T07:20:41.728Z',
+  },
+];
+
+export const INITIAL_THREADS: SmsThread[] = [
+  {
+    _id: 'thread-001',
+    callId: 'call-3cx-98124',
+    callerNumber: '+61412988114',
+    did: '0872286100',
+    storeId: '6a9ea2774d7dcfbae9cc58b6',
+    storeName: 'Mister Minit Westfield Doncaster',
+    status: ThreadStatus.BOOKING_REQUESTED,
+    messageCount: 4,
+    customerReplied: true,
+    openingSentAt: '2026-09-08T15:10:00Z',
+    lastInteractionAt: '2026-09-08T15:18:22Z',
+    followUpSentAt: null,
+    bookingCaptured: true,
+    bookingDetails: {
+      customerName: 'Claire Robertson',
+      preferredTime: 'Tomorrow at 10:30 AM',
+      serviceType: 'Car Key Fob Replacement & Programming (2018 Toyota RAV4)',
+    },
+    optedOut: false,
+    createdAt: '2026-09-08T15:10:00Z',
+    updatedAt: '2026-09-08T15:18:22Z',
+    conversationHistory: [
+      {
+        role: 'assistant',
+        content: 'Hi! You recently called Mister Minit Westfield Doncaster. Sorry we missed you! We can assist with Shoe Repairs, Keys, Engraving, and Watch repairs. How can we help you today?',
+        sentAt: '2026-09-08T15:10:00Z',
+      },
+      {
+        role: 'user',
+        content: 'Hi there, do you guys do car key replacements with the remote buttons? My 2018 Rav4 remote broke off.',
+        sentAt: '2026-09-08T15:12:40Z',
+      },
+      {
+        role: 'assistant',
+        content: 'Yes, absolutely! We duplicate and program remote car keys for Toyota models right at our Doncaster store. Would you like to book a time to drop by or check pricing?',
+        sentAt: '2026-09-08T15:13:15Z',
+      },
+      {
+        role: 'user',
+        content: 'Yes please! Can I come in tomorrow around 10:30am? Name is Claire Robertson.',
+        sentAt: '2026-09-08T15:18:22Z',
+      },
+      {
+        role: 'assistant',
+        content: "We've noted your booking for tomorrow at 10:30 AM with Jane at Westfield Doncaster. Bring your current key and vehicle along!",
+        sentAt: '2026-09-08T15:19:00Z',
+      },
+    ],
+  },
+  {
+    _id: 'thread-002',
+    callId: 'call-3cx-98110',
+    callerNumber: '+61423456789',
+    did: '61892260988',
+    storeId: '6a9ea2784d7dcfbae9cc58b8',
+    storeName: 'Enex Pert',
+    status: ThreadStatus.ACTIVE,
+    messageCount: 3,
+    customerReplied: true,
+    openingSentAt: '2026-09-08T14:40:00Z',
+    lastInteractionAt: '2026-09-08T14:48:10Z',
+    followUpSentAt: null,
+    bookingCaptured: false,
+    bookingDetails: null,
+    optedOut: false,
+    createdAt: '2026-09-08T14:40:00Z',
+    updatedAt: '2026-09-08T14:48:10Z',
+    conversationHistory: [
+      {
+        role: 'assistant',
+        content: 'Hi! You recently called Mister Minit Enex Perth. Sorry we missed your call! How can we help you today?',
+        sentAt: '2026-09-08T14:40:00Z',
+      },
+      {
+        role: 'user',
+        content: 'Do you replace watch batteries for Tag Heuer watches on the spot?',
+        sentAt: '2026-09-08T14:45:12Z',
+      },
+      {
+        role: 'assistant',
+        content: 'Yes! We perform Swiss watch battery replacements and pressure tests on-site. Feel free to pop into our Enex store.',
+        sentAt: '2026-09-08T14:48:10Z',
+      },
+    ],
+  },
+];
+
+export const INITIAL_CDRS: CdrRecord[] = [
+  {
+    callid: '3cx-rec-20260908-001',
+    duration: '00:00:22',
+    'time-start': '15:09:38',
+    'time-answered': '15:10:00',
+    'time-end': '15:10:00',
+    'reason-terminated': 'Destination Unreachable (Timeout)',
+    'from-no': '+61412988114',
+    'from-dn': 'Mobile Caller',
+    'dial-no': '0872286100',
+    isMissed: true,
+    timestamp: '2026-09-08 15:10:00',
+  },
+];
+
+export const INITIAL_SUPPRESSED: SuppressedEvent[] = [
+  {
+    _id: 'sup-001',
+    callerNumber: '+61299881234',
+    did: '0872286100',
+    storeName: 'Mister Minit Westfield Doncaster',
+    callId: 'call-sup-101',
+    suppressedReason: SuppressedReason.NOT_MOBILE,
+    createdAt: '2026-09-08T13:15:00Z',
+  },
+];
+
+export const INITIAL_OPTOUTS: OptOutRecord[] = [
+  {
+    _id: 'opt-001',
+    callerNumber: '+61498112233',
+    optOutAt: '2026-09-07T11:20:00Z',
+    keyword: 'STOP',
+    source: 'keyword',
+    threadId: 'thread-001',
+    createdAt: '2026-09-07T11:20:00Z',
+  },
+];
+
+export const TREND_DATA_7D: DailyTrendPoint[] = [
+  { date: 'Sep 02', totalCalls: 48, missedCalls: 18, smsSent: 16, replies: 12, bookings: 5 },
+  { date: 'Sep 03', totalCalls: 54, missedCalls: 22, smsSent: 20, replies: 14, bookings: 7 },
+  { date: 'Sep 04', totalCalls: 62, missedCalls: 27, smsSent: 25, replies: 18, bookings: 9 },
+  { date: 'Sep 05', totalCalls: 58, missedCalls: 21, smsSent: 19, replies: 15, bookings: 6 },
+  { date: 'Sep 06', totalCalls: 66, missedCalls: 31, smsSent: 28, replies: 21, bookings: 11 },
+  { date: 'Sep 07', totalCalls: 51, missedCalls: 19, smsSent: 18, replies: 13, bookings: 6 },
+  { date: 'Sep 08', totalCalls: 69, missedCalls: 34, smsSent: 31, replies: 24, bookings: 12 },
+];
