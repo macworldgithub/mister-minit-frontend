@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
-import type { SuppressedEvent, OptOutRecord, SuppressedReason } from '../../types';
-import { SuppressedReason as ReasonEnum } from '../../types';
-import { ShieldAlert, UserX, Trash2, Filter } from 'lucide-react';
+import React, { useState } from "react";
+import type {
+  SuppressedEvent,
+  OptOutRecord,
+  SuppressedReason,
+} from "../../types";
+import { SuppressedReason as ReasonEnum } from "../../types";
+import { ShieldAlert, UserX, Trash2, Filter } from "lucide-react";
 
 interface SuppressedViewProps {
   suppressedEvents: SuppressedEvent[];
@@ -18,39 +22,41 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
   reasonFilter,
   onReasonFilterChange,
 }) => {
-  const [activeTab, setActiveTab] = useState<'suppressed' | 'optouts'>('suppressed');
+  const [activeTab, setActiveTab] = useState<"suppressed" | "optouts">(
+    "suppressed",
+  );
 
   const reasonBadge = (reason: SuppressedReason) => {
     switch (reason) {
       case ReasonEnum.NOT_MOBILE:
         return {
-          label: 'Landline (Not Mobile)',
-          class: 'bg-slate-800 text-slate-300 border-slate-700/60',
-          desc: 'Cannot deliver SMS to Australian landline numbers.',
+          label: "Landline (Not Mobile)",
+          class: "bg-slate-800 text-slate-300 border-slate-700/60",
+          desc: "Cannot deliver SMS to Australian landline numbers.",
         };
       case ReasonEnum.NOT_A_PILOT_STORE:
         return {
-          label: 'Non-Pilot Store',
-          class: 'bg-slate-800/60 text-slate-400 border-slate-700/50',
-          desc: 'Store DID has not been onboarded into pilot yet.',
+          label: "Non-Pilot Store",
+          class: "bg-slate-800/60 text-slate-400 border-slate-700/50",
+          desc: "Store DID has not been onboarded into pilot yet.",
         };
       case ReasonEnum.DEDUP:
         return {
-          label: 'Deduplication Window',
-          class: 'bg-slate-800/80 text-slate-300 border-slate-700/60',
-          desc: 'Customer called repeatedly within rapid cooldown window.',
+          label: "Deduplication Window",
+          class: "bg-slate-800/80 text-slate-300 border-slate-700/60",
+          desc: "Customer called repeatedly within rapid cooldown window.",
         };
       case ReasonEnum.OPTED_OUT:
         return {
-          label: 'Opted Out',
-          class: 'bg-red-500/15 text-red-300 border-red-500/30',
-          desc: 'Customer previously unsubscribed from SMS.',
+          label: "Opted Out",
+          class: "bg-red-500/15 text-red-300 border-red-500/30",
+          desc: "Customer previously unsubscribed from SMS.",
         };
       default:
         return {
-          label: (reason as string).replace(/_/g, ' '),
-          class: 'bg-slate-800/60 text-slate-400 border-slate-700/60',
-          desc: '',
+          label: (reason as string).replace(/_/g, " "),
+          class: "bg-slate-800/60 text-slate-400 border-slate-700/60",
+          desc: "",
         };
     }
   };
@@ -61,28 +67,28 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
       <div className="flex items-center justify-between border-b border-slate-800/60 pb-3">
         <div className="flex items-center gap-2 bg-slate-900/50 p-1 rounded-xl border border-slate-800/60">
           <button
-            onClick={() => setActiveTab('suppressed')}
+            onClick={() => setActiveTab("suppressed")}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              activeTab === 'suppressed'
-                ? 'bg-red-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+              activeTab === "suppressed"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "text-slate-400 hover:text-white"
             }`}
           >
             Suppressed Call Events ({suppressedEvents.length})
           </button>
           <button
-            onClick={() => setActiveTab('optouts')}
+            onClick={() => setActiveTab("optouts")}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-              activeTab === 'optouts'
-                ? 'bg-red-600 text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+              activeTab === "optouts"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "text-slate-400 hover:text-white"
             }`}
           >
             Opt-Out Registry ({optOutRecords.length})
           </button>
         </div>
 
-        {activeTab === 'suppressed' && (
+        {activeTab === "suppressed" && (
           <div className="flex items-center gap-2">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
             <select
@@ -92,7 +98,9 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
             >
               <option value="all">All Suppression Reasons</option>
               <option value={ReasonEnum.NOT_MOBILE}>Landline Numbers</option>
-              <option value={ReasonEnum.NOT_A_PILOT_STORE}>Non-Pilot Stores</option>
+              <option value={ReasonEnum.NOT_A_PILOT_STORE}>
+                Non-Pilot Stores
+              </option>
               <option value={ReasonEnum.DEDUP}>Dedup Cooldown</option>
               <option value={ReasonEnum.OPTED_OUT}>Opted-Out Callers</option>
             </select>
@@ -100,7 +108,7 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
         )}
       </div>
 
-      {activeTab === 'suppressed' ? (
+      {activeTab === "suppressed" ? (
         <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
@@ -116,7 +124,10 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
               <tbody className="divide-y divide-slate-800/40">
                 {suppressedEvents.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-slate-400">
+                    <td
+                      colSpan={5}
+                      className="py-12 text-center text-slate-400"
+                    >
                       <ShieldAlert className="w-8 h-8 text-slate-600 mx-auto mb-2" />
                       No suppressed events match the selected criteria.
                     </td>
@@ -125,7 +136,10 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
                   suppressedEvents.map((ev) => {
                     const badge = reasonBadge(ev.suppressedReason);
                     return (
-                      <tr key={ev._id} className="hover:bg-slate-800/30 transition-colors">
+                      <tr
+                        key={ev._id}
+                        className="hover:bg-slate-800/30 transition-colors"
+                      >
                         <td className="py-3.5 px-4">
                           <div>
                             <span
@@ -134,7 +148,9 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
                               {badge.label}
                             </span>
                             {badge.desc && (
-                              <p className="text-[11px] text-slate-400 mt-1 max-w-xs">{badge.desc}</p>
+                              <p className="text-[11px] text-slate-400 mt-1 max-w-xs">
+                                {badge.desc}
+                              </p>
                             )}
                           </div>
                         </td>
@@ -144,8 +160,12 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
                         </td>
 
                         <td className="py-3.5 px-4">
-                          <div className="text-slate-200 font-medium">{ev.storeName || '—'}</div>
-                          <div className="text-[10px] font-mono text-slate-400">DID: {ev.did}</div>
+                          <div className="text-slate-200 font-medium">
+                            {ev.storeName || "—"}
+                          </div>
+                          <div className="text-[10px] font-mono text-slate-400">
+                            DID: {ev.did}
+                          </div>
                         </td>
 
                         <td className="py-3.5 px-4 font-mono text-[11px] text-slate-400">
@@ -179,14 +199,20 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
               <tbody className="divide-y divide-slate-800/40">
                 {optOutRecords.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-slate-400">
+                    <td
+                      colSpan={5}
+                      className="py-12 text-center text-slate-400"
+                    >
                       <UserX className="w-8 h-8 text-slate-600 mx-auto mb-2" />
                       No customers have opted out.
                     </td>
                   </tr>
                 ) : (
                   optOutRecords.map((opt) => (
-                    <tr key={opt._id} className="hover:bg-slate-800/30 transition-colors">
+                    <tr
+                      key={opt._id}
+                      className="hover:bg-slate-800/30 transition-colors"
+                    >
                       <td className="py-3.5 px-4 font-mono font-semibold text-white">
                         {opt.callerNumber}
                       </td>
@@ -200,12 +226,14 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
                       <td className="py-3.5 px-4">
                         <span
                           className={`text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full border ${
-                            opt.source === 'keyword'
-                              ? 'bg-sky-500/12 text-sky-400 border-sky-500/25'
-                              : 'bg-purple-500/12 text-purple-400 border-purple-500/25'
+                            opt.source === "keyword"
+                              ? "bg-sky-500/12 text-sky-400 border-sky-500/25"
+                              : "bg-purple-500/12 text-purple-400 border-purple-500/25"
                           }`}
                         >
-                          {opt.source === 'keyword' ? 'SMS Keyword (STOP)' : 'AI LLM Detected'}
+                          {opt.source === "keyword"
+                            ? "SMS Keyword (STOP)"
+                            : "AI LLM Detected"}
                         </span>
                       </td>
 

@@ -1,6 +1,6 @@
-import React from 'react';
-import type { StoreConfig, TimeRangeFilter } from '../../types';
-import { Store, Calendar, RefreshCw, Menu } from 'lucide-react';
+import React from "react";
+import type { StoreConfig, TimeRangeFilter } from "../../types";
+import { Store, Calendar, RefreshCw, Menu } from "lucide-react";
 
 interface HeaderProps {
   title: string;
@@ -40,15 +40,21 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
         <div>
-          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">{title}</h2>
-          {subtitle && <p className="text-xs text-slate-400 mt-0.5 hidden sm:block">{subtitle}</p>}
+          <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight leading-tight">
+            {title}
+          </h2>
+          {subtitle && (
+            <p className="text-xs text-slate-400 mt-0.5 hidden sm:block">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="flex items-center flex-wrap gap-2.5 sm:gap-3">
         {/* Store Selector */}
         <div className="flex items-center gap-2 bg-slate-950/60 border border-slate-800/60 rounded-xl px-2.5 sm:px-3 py-1.5 shadow-sm max-w-[200px] sm:max-w-none">
-          <Store className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-400 flex-shrink-0" />
+          <Store className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400 flex-shrink-0" />
           <select
             value={selectedStoreId}
             onChange={(e) => onSelectStore(e.target.value)}
@@ -58,7 +64,11 @@ export const Header: React.FC<HeaderProps> = ({
               All Stores ({stores.length} Pilot)
             </option>
             {stores.map((s) => (
-              <option key={s._id || s.did} value={s._id || s.did} className="bg-slate-900 text-slate-200">
+              <option
+                key={s._id || s.did}
+                value={s._id || s.did}
+                className="bg-slate-900 text-slate-200"
+              >
                 {s.storeName} ({s.did})
               </option>
             ))}
@@ -68,16 +78,17 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Time Range Selector */}
         <div className="flex items-center bg-slate-950/60 border border-slate-800/60 rounded-xl p-1">
           <Calendar className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-1 hidden xs:block" />
-          {(['today', '7d', '30d', 'all'] as TimeRangeFilter[]).map((range) => (
+          {(["today", "7d", "30d", "all"] as TimeRangeFilter[]).map((range) => (
             <button
               key={range}
               onClick={() => onSelectTimeRange(range)}
-              className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-lg capitalize transition-all cursor-pointer ${timeRange === range
-                  ? 'bg-red-600 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-                }`}
+              className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-lg capitalize transition-all cursor-pointer ${
+                timeRange === range
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
             >
-              {range === '7d' ? '7D' : range === '30d' ? '30D' : range}
+              {range === "7d" ? "7D" : range === "30d" ? "30D" : range}
             </button>
           ))}
         </div>
@@ -89,7 +100,9 @@ export const Header: React.FC<HeaderProps> = ({
           title="Refresh Data"
           className="p-2 rounded-xl bg-slate-950/60 border border-slate-800/60 text-slate-400 hover:text-white hover:border-slate-700 transition-all cursor-pointer disabled:opacity-50 flex-shrink-0"
         >
-          <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-red-400' : ''}`} />
+          <RefreshCw
+            className={`w-4 h-4 ${isRefreshing ? "animate-spin text-blue-400" : ""}`}
+          />
         </button>
       </div>
     </header>

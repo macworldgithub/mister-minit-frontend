@@ -2,30 +2,30 @@
 
 @layer base {
   :root {
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
 
     /* ── Unified Theme Tokens ── */
     --color-bg-base: #090d16;
-    --color-bg-card: rgba(15, 23, 42, 0.50);
+    --color-bg-card: rgba(15, 23, 42, 0.5);
     /* slate-900/50 */
-    --color-bg-nested: rgba(2, 6, 23, 0.60);
+    --color-bg-nested: rgba(2, 6, 23, 0.6);
     /* slate-950/60 */
-    --color-bg-input: rgba(2, 6, 23, 0.80);
+    --color-bg-input: rgba(2, 6, 23, 0.8);
     /* slate-950/80 */
-    --color-bg-table-head: rgba(15, 23, 42, 0.80);
+    --color-bg-table-head: rgba(15, 23, 42, 0.8);
     /* slate-900/80 */
-    --color-border: rgba(30, 41, 59, 0.60);
+    --color-border: rgba(30, 41, 59, 0.6);
     /* slate-800/60 */
     --color-border-hover: #334155;
     /* slate-700 */
     --color-text-primary: #f1f5f9;
     --color-text-secondary: #94a3b8;
     --color-text-muted: #64748b;
-    --color-accent: #dc2626;
-    /* red-600 */
-    --color-accent-hover: #ef4444;
-    /* red-500 */
+    --color-accent: #2563eb;
+    /* blue-600 */
+    --color-accent-hover: #3b82f6;
+    /* blue-500 */
     --radius-card: 0.75rem;
     /* 12px — rounded-xl */
     --radius-pill: 0.5rem;

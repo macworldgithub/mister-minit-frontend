@@ -1,7 +1,12 @@
-import React from 'react';
-import type { DashboardMetrics, SmsThread, StoreConfig, ThreadStatus } from '../../types';
-import { ThreadStatus as StatusEnum } from '../../types';
-import { MetricCard } from './MetricCard';
+import React from "react";
+import type {
+  DashboardMetrics,
+  SmsThread,
+  StoreConfig,
+  ThreadStatus,
+} from "../../types";
+import { ThreadStatus as StatusEnum } from "../../types";
+import { MetricCard } from "./MetricCard";
 import {
   PhoneCall,
   PhoneMissed,
@@ -14,14 +19,16 @@ import {
   Store,
   User,
   Clock,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface OverviewViewProps {
   metrics: DashboardMetrics;
   recentThreads: SmsThread[];
   stores: StoreConfig[];
   onSelectThread: (thread: SmsThread) => void;
-  onNavigateTab: (tab: 'conversations' | 'stores' | 'cdr' | 'suppressed') => void;
+  onNavigateTab: (
+    tab: "conversations" | "stores" | "cdr" | "suppressed",
+  ) => void;
 }
 
 export const OverviewView: React.FC<OverviewViewProps> = ({
@@ -34,19 +41,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const getStatusBadge = (status: ThreadStatus) => {
     switch (status) {
       case StatusEnum.BOOKING_REQUESTED:
-        return 'bg-red-500/15 text-red-300 border-red-500/30';
+        return "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
       case StatusEnum.ACTIVE:
-        return 'bg-slate-800 text-slate-200 border-slate-700/80';
+        return "bg-slate-800 text-slate-200 border-slate-700/80";
       case StatusEnum.CLOSED_VISITED:
-        return 'bg-slate-800/80 text-slate-300 border-slate-700/60';
+        return "bg-slate-800/80 text-slate-300 border-slate-700/60";
       case StatusEnum.CLOSED_OPTED_OUT:
-        return 'bg-slate-900 text-slate-400 border-slate-800';
+        return "bg-slate-900 text-slate-400 border-slate-800";
       default:
-        return 'bg-slate-800/60 text-slate-300 border-slate-700/60';
+        return "bg-slate-800/60 text-slate-300 border-slate-700/60";
     }
   };
 
-  const formatStatus = (s: string) => s.replace(/_/g, ' ');
+  const formatStatus = (s: string) => s.replace(/_/g, " ");
 
   return (
     <div className="space-y-6">
@@ -106,23 +113,30 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div>
-            <h3 className="text-sm sm:text-base font-semibold text-white">Conversion Funnel Activity</h3>
+            <h3 className="text-sm sm:text-base font-semibold text-white">
+              Conversion Funnel Activity
+            </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Daily trend of calls, missed call recovery SMS, and captured bookings
+              Daily trend of calls, missed call recovery SMS, and captured
+              bookings
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-medium text-slate-300">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-slate-500"></span> Inbound Calls
+              <span className="w-2.5 h-2.5 rounded-sm bg-slate-500"></span>{" "}
+              Inbound Calls
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-red-600"></span> Missed Calls
+              <span className="w-2.5 h-2.5 rounded-sm bg-red-500"></span> Missed
+              Calls
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-slate-400"></span> SMS Dispatched
+              <span className="w-2.5 h-2.5 rounded-sm bg-slate-400"></span> SMS
+              Dispatched
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-red-400"></span> Bookings
+              <span className="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span>{" "}
+              Bookings
             </span>
           </div>
         </div>
@@ -139,7 +153,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 const hBookings = Math.round((item.bookings / maxVal) * 100);
 
                 return (
-                  <div key={item.date} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
+                  <div
+                    key={item.date}
+                    className="flex-1 flex flex-col items-center gap-2 group h-full justify-end"
+                  >
                     <div className="w-full flex items-end justify-center gap-1 h-full px-0.5 sm:px-1">
                       <div
                         style={{ height: `${hCalls}%` }}
@@ -148,7 +165,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       />
                       <div
                         style={{ height: `${hMissed}%` }}
-                        className="w-2 sm:w-2.5 bg-red-600 hover:bg-red-500 rounded-t-sm transition-all"
+                        className="w-2 sm:w-2.5 bg-red-500 hover:bg-red-400 rounded-t-sm transition-all"
                         title={`Missed Calls: ${item.missedCalls}`}
                       />
                       <div
@@ -158,7 +175,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       />
                       <div
                         style={{ height: `${hBookings}%` }}
-                        className="w-2 sm:w-2.5 bg-red-400 hover:bg-red-300 rounded-t-sm transition-all"
+                        className="w-2 sm:w-2.5 bg-emerald-400 hover:bg-emerald-300 rounded-t-sm transition-all"
                         title={`Bookings: ${item.bookings}`}
                       />
                     </div>
@@ -183,17 +200,21 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl p-4 sm:p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-slate-800 text-red-400 border border-slate-700/60">
+              <div className="p-2 rounded-xl bg-slate-800 text-blue-400 border border-slate-700/60">
                 <Send className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">Live SMS Threads</h3>
-                <p className="text-xs text-slate-400">Recent missed call inquiries</p>
+                <h3 className="text-sm font-semibold text-white">
+                  Live SMS Threads
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Recent missed call inquiries
+                </p>
               </div>
             </div>
             <button
-              onClick={() => onNavigateTab('conversations')}
-              className="text-xs font-semibold text-red-400 hover:text-red-300 flex items-center gap-1 cursor-pointer transition-colors"
+              onClick={() => onNavigateTab("conversations")}
+              className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors"
             >
               View All <ChevronRight className="w-3.5 h-3.5" />
             </button>
@@ -204,16 +225,20 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               <div
                 key={thread._id}
                 onClick={() => onSelectThread(thread)}
-                className="p-3 sm:p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/60 hover:border-red-500/30 hover:bg-slate-950/80 transition-all cursor-pointer group"
+                className="p-3 sm:p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/60 hover:border-blue-500/30 hover:bg-slate-950/80 transition-all cursor-pointer group"
               >
                 <div className="flex flex-wrap items-center justify-between gap-1.5 mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-slate-200">{thread.callerNumber}</span>
-                    <span className="text-[11px] text-slate-400 font-medium">({thread.storeName})</span>
+                    <span className="text-xs font-bold text-slate-200">
+                      {thread.callerNumber}
+                    </span>
+                    <span className="text-[11px] text-slate-400 font-medium">
+                      ({thread.storeName})
+                    </span>
                   </div>
                   <span
                     className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border ${getStatusBadge(
-                      thread.status
+                      thread.status,
                     )}`}
                   >
                     {formatStatus(thread.status)}
@@ -222,15 +247,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
                 <p className="text-xs text-slate-300 line-clamp-1 group-hover:text-white transition-colors">
                   {thread.conversationHistory.length > 0
-                    ? thread.conversationHistory[thread.conversationHistory.length - 1].content
-                    : 'Awaiting customer response...'}
+                    ? thread.conversationHistory[
+                        thread.conversationHistory.length - 1
+                      ].content
+                    : "Awaiting customer response..."}
                 </p>
 
                 {thread.bookingCaptured && thread.bookingDetails && (
-                  <div className="mt-2 text-[11px] bg-red-500/10 border border-red-500/20 rounded-lg px-2.5 py-1 text-red-300 flex items-center gap-1.5 flex-wrap">
-                    <CalendarCheck className="w-3 h-3 text-red-400" />
+                  <div className="mt-2 text-[11px] bg-emerald-500/10 border border-emerald-500/20 rounded-lg px-2.5 py-1 text-emerald-300 flex items-center gap-1.5 flex-wrap">
+                    <CalendarCheck className="w-3 h-3 text-emerald-400" />
                     <span>
-                      Booking: <strong>{thread.bookingDetails.serviceType}</strong> ({thread.bookingDetails.preferredTime})
+                      Booking:{" "}
+                      <strong>{thread.bookingDetails.serviceType}</strong> (
+                      {thread.bookingDetails.preferredTime})
                     </span>
                   </div>
                 )}
@@ -243,17 +272,21 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl p-4 sm:p-5 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-slate-800 text-red-400 border border-slate-700/60">
+              <div className="p-2 rounded-xl bg-slate-800 text-blue-400 border border-slate-700/60">
                 <Store className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">Active Pilot Stores</h3>
-                <p className="text-xs text-slate-400">Stores routing missed calls to SMS</p>
+                <h3 className="text-sm font-semibold text-white">
+                  Active Pilot Stores
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Stores routing missed calls to SMS
+                </p>
               </div>
             </div>
             <button
-              onClick={() => onNavigateTab('stores')}
-              className="text-xs font-semibold text-red-400 hover:text-red-300 flex items-center gap-1 cursor-pointer transition-colors"
+              onClick={() => onNavigateTab("stores")}
+              className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors"
             >
               Manage <ChevronRight className="w-3.5 h-3.5" />
             </button>
@@ -267,18 +300,22 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               >
                 <div className="space-y-1 min-w-[180px]">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h4 className="text-xs font-bold text-white">{store.storeName}</h4>
+                    <h4 className="text-xs font-bold text-white">
+                      {store.storeName}
+                    </h4>
                     <span className="text-[10px] font-mono text-slate-400 bg-slate-800/60 px-1.5 py-0.5 rounded">
                       DID: {store.did}
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-[11px] text-slate-400 flex-wrap">
                     <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-slate-500" /> Hours configured
+                      <Clock className="w-3 h-3 text-slate-500" /> Hours
+                      configured
                     </span>
                     {store.staffContacts[0] && (
                       <span className="flex items-center gap-1">
-                        <User className="w-3 h-3 text-slate-500" /> {store.staffContacts[0].name}
+                        <User className="w-3 h-3 text-slate-500" />{" "}
+                        {store.staffContacts[0].name}
                       </span>
                     )}
                   </div>
@@ -286,12 +323,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
                 <div className="flex items-center gap-2">
                   <span
-                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${store.isActive
-                      ? 'bg-red-500/10 text-red-300 border-red-500/20'
-                      : 'bg-slate-800/60 text-slate-400 border-slate-700/60'
-                      }`}
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${
+                      store.isActive
+                        ? "bg-blue-500/10 text-blue-300 border-blue-500/20"
+                        : "bg-slate-800/60 text-slate-400 border-slate-700/60"
+                    }`}
                   >
-                    {store.isActive ? 'Pilot Live' : 'Inactive'}
+                    {store.isActive ? "Pilot Live" : "Inactive"}
                   </span>
                   {store.googleMapsLink && (
                     <a

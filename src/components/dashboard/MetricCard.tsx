@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 interface MetricCardProps {
   label: string;
   value: string | number;
   subValue?: string;
   change?: string;
-  trend?: 'up' | 'down' | 'neutral';
+  trend?: "up" | "down" | "neutral";
   icon: React.ElementType;
 }
 
@@ -14,7 +14,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   value,
   subValue,
   change,
-  trend = 'up',
+  trend = "up",
   icon: Icon,
 }) => {
   return (
@@ -26,24 +26,29 @@ export const MetricCard: React.FC<MetricCardProps> = ({
           </span>
           <div className="text-xl sm:text-2xl font-bold text-white mt-1.5 sm:mt-2 tracking-tight flex flex-wrap items-baseline gap-2">
             <span>{value}</span>
-            {subValue && <span className="text-xs font-normal text-slate-400">{subValue}</span>}
+            {subValue && (
+              <span className="text-xs font-normal text-slate-400">
+                {subValue}
+              </span>
+            )}
           </div>
         </div>
 
         <div className="p-2.5 sm:p-3 rounded-xl bg-slate-800/60 text-slate-200 border border-slate-700/60 transition-transform duration-200 group-hover:scale-105 flex-shrink-0">
-          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-red-400" />
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
         </div>
       </div>
 
       {change && (
         <div className="mt-3 flex items-center gap-2 flex-wrap">
           <span
-            className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${trend === 'up'
-                ? 'bg-red-500/10 text-red-300 border-red-500/20'
-                : trend === 'down'
-                  ? 'bg-slate-800 text-slate-400 border-slate-700/60'
-                  : 'bg-slate-800 text-slate-300 border-slate-700/60'
-              }`}
+            className={`text-[11px] font-semibold px-2 py-0.5 rounded-md border ${
+              trend === "up"
+                ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/20"
+                : trend === "down"
+                  ? "bg-slate-800 text-slate-400 border-slate-700/60"
+                  : "bg-slate-800 text-slate-300 border-slate-700/60"
+            }`}
           >
             {change}
           </span>
