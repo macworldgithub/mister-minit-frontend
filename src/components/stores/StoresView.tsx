@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   XCircle,
   RefreshCw,
+  AlertTriangle,
+  X,
 } from "lucide-react";
 
 interface StoresViewProps {
@@ -27,6 +29,98 @@ interface StoresViewProps {
   onRefresh?: () => Promise<any> | any;
 }
 
+/** Inline delete-confirmation modal */
+const DeleteConfirmModal: React.FC<{
+  isOpen: boolean;
+  storeName: string;
+  storeDid: string;
+  isDeleting: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}> = ({ isOpen, storeName, storeDid, isDeleting, onConfirm, onCancel }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ backgroundColor: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+    >
+      <div
+        className="bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-[fadeScaleIn_0.2s_ease-out]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 pt-5 pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-red-500/15 border border-red-500/30 flex items-center justify-center">
+              <AlertTriangle className="w-4.5 h-4.5 text-red-400" />
+            </div>
+            <h3 className="text-sm font-bold text-white">Delete Store Config</h3>
+          </div>
+          <button
+            onClick={onCancel}
+            disabled={isDeleting}
+            className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-5 pb-4">
+          <p className="text-xs text-slate-300 leading-relaxed mb-3">
+            Are you sure you want to permanently delete this store configuration?
+            This action cannot be undone.
+          </p>
+          <div className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-red-400 flex-shrink-0">
+              <Store className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-white">{storeName}</p>
+              <p className="text-[11px] font-mono text-slate-400">DID: {storeDid}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 pb-5 flex items-center justify-end gap-2.5">
+          <button
+            onClick={onCancel}
+            disabled={isDeleting}
+            className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors cursor-pointer border border-slate-700/60 disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-red-900/30 disabled:opacity-60"
+          >
+            {isDeleting ? (
+              <>
+                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Deleting…
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-3.5 h-3.5" /> Delete Store
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Keyframe animation (injected once) */}
+      <style>{`
+        @keyframes fadeScaleIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 export const StoresView: React.FC<StoresViewProps> = ({
   stores,
   isLoading = false,
@@ -38,6 +132,10 @@ export const StoresView: React.FC<StoresViewProps> = ({
   const [editingStore, setEditingStore] = useState<StoreConfig | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Delete confirmation modal state
+  const [deleteTarget, setDeleteTarget] = useState<StoreConfig | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleManualRefresh = async () => {
     if (onRefresh) {
@@ -68,6 +166,19 @@ export const StoresView: React.FC<StoresViewProps> = ({
   const handleDelete = async (did: string) => {
     if (onDeleteStore) {
       await onDeleteStore(did);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget || !onDeleteStore) return;
+    setIsDeleting(true);
+    try {
+      await onDeleteStore(deleteTarget.did);
+      setDeleteTarget(null);
+    } catch {
+      // keep modal open on error so user can retry
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -177,15 +288,7 @@ export const StoresView: React.FC<StoresViewProps> = ({
 
                     {onDeleteStore && (
                       <button
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              `Are you sure you want to delete "${store.storeName}" (${store.did})?`,
-                            )
-                          ) {
-                            handleDelete(store.did);
-                          }
-                        }}
+                        onClick={() => setDeleteTarget(store)}
                         className="p-2 rounded-xl bg-slate-800/60 hover:bg-slate-700 hover:text-red-400 text-slate-400 transition-colors cursor-pointer"
                         title="Delete Store Config (DELETE)"
                       >
@@ -244,11 +347,10 @@ export const StoresView: React.FC<StoresViewProps> = ({
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => onToggleActive(store.did, store.isActive)}
-                    className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer ${
-                      store.isActive
-                        ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25"
-                        : "bg-slate-800/60 text-slate-400 border-slate-700/60 hover:bg-slate-700/60"
-                    }`}
+                    className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all cursor-pointer ${store.isActive
+                      ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/25"
+                      : "bg-slate-800/60 text-slate-400 border-slate-700/60 hover:bg-slate-700/60"
+                      }`}
                   >
                     {store.isActive ? (
                       <>
@@ -291,6 +393,18 @@ export const StoresView: React.FC<StoresViewProps> = ({
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
         onDelete={handleDelete}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmModal
+        isOpen={!!deleteTarget}
+        storeName={deleteTarget?.storeName ?? ""}
+        storeDid={deleteTarget?.did ?? ""}
+        isDeleting={isDeleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => {
+          if (!isDeleting) setDeleteTarget(null);
+        }}
       />
     </div>
   );
