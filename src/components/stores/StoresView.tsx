@@ -15,6 +15,8 @@ import {
   RefreshCw,
   AlertTriangle,
   X,
+  Phone,
+  Link2,
 } from "lucide-react";
 
 interface StoresViewProps {
@@ -311,6 +313,47 @@ export const StoresView: React.FC<StoresViewProps> = ({
                     {store.tradingHours}
                   </span>
                 </div>
+
+                {/* Routing & Contact Details */}
+                {(store.contactPhoneNumber || store.actionNotes || store.bookingLink) && (
+                  <div className="mb-3 bg-slate-950/40 rounded-xl p-2.5 border border-slate-800/50 space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      {store.actionNotes && (
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold border ${
+                            store.actionNotes.toLowerCase().includes("hq reception")
+                              ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                              : "bg-purple-500/10 text-purple-300 border-purple-500/20"
+                          }`}
+                        >
+                          {store.actionNotes}
+                        </span>
+                      )}
+
+                      {store.contactPhoneNumber && (
+                        <div className="flex items-center gap-1 text-slate-300 font-mono text-[11px]">
+                          <Phone className="w-3 h-3 text-slate-400" />
+                          <span>{store.contactPhoneNumber}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {store.bookingLink && (
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 truncate">
+                        <Link2 className="w-3 h-3 text-slate-500 flex-shrink-0" />
+                        <a
+                          href={store.bookingLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:text-blue-400 underline truncate transition-colors"
+                          title={store.bookingLink}
+                        >
+                          {store.bookingLink}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Staff Contacts */}
                 {store.staffContacts && store.staffContacts.length > 0 && (

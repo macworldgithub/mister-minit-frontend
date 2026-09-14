@@ -21,10 +21,19 @@ const StoreFormContent: React.FC<{
   const [address, setAddress] = useState(store?.address || "");
   const [tradingHours, setTradingHours] = useState(
     store?.tradingHours ||
-      "Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: Closed",
+    "Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: Closed",
   );
   const [googleMapsLink, setGoogleMapsLink] = useState(
     store?.googleMapsLink || "",
+  );
+  const [contactPhoneNumber, setContactPhoneNumber] = useState(
+    store?.contactPhoneNumber || "",
+  );
+  const [actionNotes, setActionNotes] = useState<string>(
+    store?.actionNotes || "Direct to Mobile Van",
+  );
+  const [bookingLink, setBookingLink] = useState(
+    store?.bookingLink || "",
   );
   const [isActive, setIsActive] = useState(store ? store.isActive : true);
   const [staffContacts, setStaffContacts] = useState<StaffContact[]>(
@@ -68,7 +77,10 @@ const StoreFormContent: React.FC<{
       did: did.trim(),
       address: address.trim(),
       tradingHours: tradingHours.trim(),
-      googleMapsLink: googleMapsLink.trim() || undefined,
+      googleMapsLink: googleMapsLink.trim(),
+      contactPhoneNumber: contactPhoneNumber.trim(),
+      actionNotes: actionNotes.trim(),
+      bookingLink: bookingLink.trim(),
       isActive,
       staffContacts: cleanedContacts,
     });
@@ -170,6 +182,48 @@ const StoreFormContent: React.FC<{
             placeholder="https://maps.google.com/?q=..."
             value={googleMapsLink}
             onChange={(e) => setGoogleMapsLink(e.target.value)}
+            className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl px-3 py-2 text-xs text-white outline-none transition-colors"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs font-semibold text-slate-300 block mb-1">
+              Contact Phone Number
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. 0423 707 295"
+              value={contactPhoneNumber}
+              onChange={(e) => setContactPhoneNumber(e.target.value)}
+              className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl px-3 py-2 text-xs text-white outline-none transition-colors font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-300 block mb-1">
+              Action Notes
+            </label>
+            <select
+              value={actionNotes}
+              onChange={(e) => setActionNotes(e.target.value)}
+              className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl px-3 py-2 text-xs text-white outline-none transition-colors cursor-pointer"
+            >
+              <option value="Direct to Mobile Van">Direct to Mobile Van</option>
+              <option value="Direct to HQ Reception">Direct to HQ Reception</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-xs font-semibold text-slate-300 block mb-1">
+            Booking Link
+          </label>
+          <input
+            type="url"
+            placeholder="e.g. https://misterminit.co/pages/car-keys"
+            value={bookingLink}
+            onChange={(e) => setBookingLink(e.target.value)}
             className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl px-3 py-2 text-xs text-white outline-none transition-colors"
           />
         </div>

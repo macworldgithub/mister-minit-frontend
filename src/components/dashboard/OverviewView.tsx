@@ -312,6 +312,17 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       <Clock className="w-3 h-3 text-slate-500" /> Hours
                       configured
                     </span>
+                    {store.actionNotes && (
+                      <span
+                        className={`px-1.5 py-0.2 text-[10px] font-medium rounded border ${
+                          store.actionNotes.toLowerCase().includes("hq reception")
+                            ? "bg-amber-500/10 text-amber-300 border-amber-500/20"
+                            : "bg-purple-500/10 text-purple-300 border-purple-500/20"
+                        }`}
+                      >
+                        {store.actionNotes}
+                      </span>
+                    )}
                     {store.staffContacts[0] && (
                       <span className="flex items-center gap-1">
                         <User className="w-3 h-3 text-slate-500" />{" "}

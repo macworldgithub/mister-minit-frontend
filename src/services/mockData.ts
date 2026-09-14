@@ -16,6 +16,9 @@ export const INITIAL_STORES: StoreConfig[] = [
     address: 'Kiosk 204 Westfield, 297 Diagonal Rd, Oaklands Park SA 5046',
     tradingHours: 'Mon-Wed & Fri 9:00am–5:30pm, Thu 9:00am–9:00pm, Sat 9:00am–5:00pm, Sun 11:00am–5:00pm',
     googleMapsLink: 'https://goo.gl/maps/example',
+    contactPhoneNumber: '0423 707 295',
+    actionNotes: 'Direct to Mobile Van',
+    bookingLink: 'https://misterminit.co/pages/car-keys',
     staffContacts: [
       {
         name: 'Jane Smith',

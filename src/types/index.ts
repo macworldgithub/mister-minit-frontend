@@ -62,6 +62,9 @@ export interface StoreConfig {
   address: string;
   tradingHours: string;
   googleMapsLink?: string;
+  contactPhoneNumber?: string;
+  actionNotes?: string;
+  bookingLink?: string;
   staffContacts: StaffContact[];
   isActive: boolean;
   createdAt?: string;
