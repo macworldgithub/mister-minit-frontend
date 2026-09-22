@@ -2,7 +2,6 @@ import type { SmsThread } from "../types";
 import { ThreadStatus } from "../types";
 import { API_CONFIG, request } from "./apiClient";
 import { INITIAL_THREADS } from "./mockData";
-import type { PaginatedResult } from "../types";
 
 let mockThreads: SmsThread[] = [...INITIAL_THREADS];
 

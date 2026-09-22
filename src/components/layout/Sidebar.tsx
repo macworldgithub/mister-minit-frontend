@@ -5,11 +5,8 @@ import {
   Store,
   PhoneCall,
   ShieldAlert,
-  Server,
-  Zap,
   X,
 } from "lucide-react";
-import { API_CONFIG } from "../../services/apiClient";
 
 export type NavTab =
   | "overview"

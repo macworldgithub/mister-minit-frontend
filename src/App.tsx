@@ -447,12 +447,6 @@ export function App() {
                 onLogsPageChange={setLogsPage}
                 onSelectThread={setActiveThread}
                 onNavigateTab={setCurrentTab}
-                loading={moduleLoading.conversations}
-                error={moduleErrors.conversations}
-                page={threadPage}
-                hasNextPage={threads.length === 50}
-                onPageChange={setThreadPage}
-                onRefresh={loadData}
               />
             )}
 
@@ -465,6 +459,12 @@ export function App() {
                 onStatusFilterChange={setThreadStatusFilter}
                 searchQuery={threadSearchQuery}
                 onSearchChange={setThreadSearchQuery}
+                loading={moduleLoading.conversations}
+                error={moduleErrors.conversations}
+                page={threadPage}
+                hasNextPage={threads.length === 50}
+                onPageChange={setThreadPage}
+                onRefresh={loadData}
               />
             )}
 
