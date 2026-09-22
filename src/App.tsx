@@ -27,6 +27,7 @@ import type {
   StatsStore,
   StoreComparison,
   RecentLog,
+  SuppressionSummary,
 } from "./types";
 import { ThreadStatus as StatusEnum } from "./types";
 import "./App.css";
@@ -56,6 +57,22 @@ export function App() {
   const [logsPage, setLogsPage] = useState(1);
   const [comparisonTotal, setComparisonTotal] = useState(0);
   const [logsTotal, setLogsTotal] = useState(0);
+  const [suppressionSummary, setSuppressionSummary] =
+    useState<SuppressionSummary | null>(null);
+  const [moduleLoading, setModuleLoading] = useState({
+    conversations: false,
+    cdr: false,
+    suppressed: false,
+  });
+  const [moduleErrors, setModuleErrors] = useState({
+    conversations: null as string | null,
+    cdr: null as string | null,
+    suppressed: null as string | null,
+  });
+  const [threadPage, setThreadPage] = useState(1);
+  const [cdrPage, setCdrPage] = useState(1);
+  const [suppressedPage, setSuppressedPage] = useState(1);
+  const [optOutPage, setOptOutPage] = useState(1);
 
   // Active View Modals/Drawers
   const [activeThread, setActiveThread] = useState<SmsThread | null>(null);
@@ -63,10 +80,15 @@ export function App() {
   // Filters within views
   const [threadStatusFilter, setThreadStatusFilter] = useState<string>("all");
   const [threadSearchQuery, setThreadSearchQuery] = useState<string>("");
-  const [cdrMissedOnly, setCdrMissedOnly] = useState<boolean>(false);
+  const [cdrStatusFilter, setCdrStatusFilter] = useState<
+    "all" | "missed" | "answered"
+  >("all");
   const [cdrSearchQuery, setCdrSearchQuery] = useState<string>("");
   const [suppressedReasonFilter, setSuppressedReasonFilter] =
     useState<string>("all");
+  const [suppressedSearchQuery, setSuppressedSearchQuery] = useState("");
+  const [optOutSearchQuery, setOptOutSearchQuery] = useState("");
+  const [optOutSourceFilter, setOptOutSourceFilter] = useState("all");
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -102,12 +124,15 @@ export function App() {
   // Load all dynamic data based on active filters
   const loadData = useCallback(async () => {
     setIsRefreshing(true);
+    setModuleLoading({ conversations: true, cdr: true, suppressed: true });
+    setModuleErrors({ conversations: null, cdr: null, suppressed: null });
     try {
       const [
         threadsResult,
         cdrsResult,
         suppressedResult,
         optoutsResult,
+        summaryResult,
         metricsResult,
         comparisonResult,
         logsResult,
@@ -116,17 +141,33 @@ export function App() {
           storeId: selectedStoreId,
           status: threadStatusFilter,
           search: threadSearchQuery,
+          limit: 50,
+          skip: (threadPage - 1) * 50,
         }),
         cdrService.getCdrRecords({
-          did: selectedStoreId,
-          missedOnly: cdrMissedOnly,
+          storeId: selectedStoreId,
+          isMissed:
+            cdrStatusFilter === "all"
+              ? undefined
+              : cdrStatusFilter === "missed",
           search: cdrSearchQuery,
+          limit: 50,
+          skip: (cdrPage - 1) * 50,
         }),
         suppressedService.getSuppressedEvents({
           storeId: selectedStoreId,
           reason: suppressedReasonFilter,
+          search: suppressedSearchQuery,
+          limit: 50,
+          skip: (suppressedPage - 1) * 50,
         }),
-        suppressedService.getOptOutRecords(),
+        suppressedService.getOptOutRecords({
+          search: optOutSearchQuery,
+          source: optOutSourceFilter,
+          limit: 50,
+          skip: (optOutPage - 1) * 50,
+        }),
+        suppressedService.getSummary(),
         dashboardService.getMetrics({
           storeId: selectedStoreId,
           timeRange,
@@ -163,21 +204,48 @@ export function App() {
         setLogsPage(logsResult.value.pagination.page);
         setLogsTotal(logsResult.value.pagination.total);
       }
+      if (summaryResult.status === "fulfilled") {
+        setSuppressionSummary(summaryResult.value);
+      }
+      setModuleErrors({
+        conversations:
+          threadsResult.status === "rejected"
+            ? "Unable to load live SMS threads."
+            : null,
+        cdr:
+          cdrsResult.status === "rejected"
+            ? "Unable to load live 3CX call logs."
+            : null,
+        suppressed:
+          suppressedResult.status === "rejected" ||
+          optoutsResult.status === "rejected" ||
+          summaryResult.status === "rejected"
+            ? "Unable to load suppression and opt-out data."
+            : null,
+      });
     } catch (err) {
       console.error("Failed to load data:", err);
     } finally {
       setIsRefreshing(false);
+      setModuleLoading({ conversations: false, cdr: false, suppressed: false });
     }
   }, [
     selectedStoreId,
     threadStatusFilter,
     threadSearchQuery,
-    cdrMissedOnly,
+    cdrStatusFilter,
     cdrSearchQuery,
     suppressedReasonFilter,
+    suppressedSearchQuery,
+    optOutSearchQuery,
+    optOutSourceFilter,
     timeRange,
     comparisonPage,
     logsPage,
+    threadPage,
+    cdrPage,
+    suppressedPage,
+    optOutPage,
   ]);
 
   useEffect(() => {
@@ -379,6 +447,12 @@ export function App() {
                 onLogsPageChange={setLogsPage}
                 onSelectThread={setActiveThread}
                 onNavigateTab={setCurrentTab}
+                loading={moduleLoading.conversations}
+                error={moduleErrors.conversations}
+                page={threadPage}
+                hasNextPage={threads.length === 50}
+                onPageChange={setThreadPage}
+                onRefresh={loadData}
               />
             )}
 
@@ -408,10 +482,15 @@ export function App() {
             {currentTab === "cdr" && (
               <CdrView
                 cdrs={cdrs}
-                missedOnly={cdrMissedOnly}
-                onToggleMissedOnly={setCdrMissedOnly}
+                statusFilter={cdrStatusFilter}
+                onStatusFilterChange={setCdrStatusFilter}
                 searchQuery={cdrSearchQuery}
                 onSearchChange={setCdrSearchQuery}
+                loading={moduleLoading.cdr}
+                error={moduleErrors.cdr}
+                page={cdrPage}
+                hasNextPage={cdrs.length === 50}
+                onPageChange={setCdrPage}
               />
             )}
 
@@ -422,6 +501,21 @@ export function App() {
                 onRemoveOptOut={handleRemoveOptOut}
                 reasonFilter={suppressedReasonFilter}
                 onReasonFilterChange={setSuppressedReasonFilter}
+                suppressedSearch={suppressedSearchQuery}
+                onSuppressedSearchChange={setSuppressedSearchQuery}
+                optOutSearch={optOutSearchQuery}
+                onOptOutSearchChange={setOptOutSearchQuery}
+                optOutSource={optOutSourceFilter}
+                onOptOutSourceChange={setOptOutSourceFilter}
+                summary={suppressionSummary}
+                loading={moduleLoading.suppressed}
+                error={moduleErrors.suppressed}
+                suppressedPage={suppressedPage}
+                optOutPage={optOutPage}
+                hasNextSuppressedPage={suppressedEvents.length === 50}
+                hasNextOptOutPage={optOutRecords.length === 50}
+                onSuppressedPageChange={setSuppressedPage}
+                onOptOutPageChange={setOptOutPage}
               />
             )}
           </div>

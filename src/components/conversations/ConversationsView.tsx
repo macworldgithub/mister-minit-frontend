@@ -1,7 +1,14 @@
 import React from "react";
 import type { SmsThread, ThreadStatus } from "../../types";
 import { ThreadStatus as StatusEnum } from "../../types";
-import { Search, MessageSquare, CalendarCheck } from "lucide-react";
+import {
+  Search,
+  MessageSquare,
+  CalendarCheck,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+} from "lucide-react";
 
 interface ConversationsViewProps {
   threads: SmsThread[];
@@ -11,6 +18,12 @@ interface ConversationsViewProps {
   onStatusFilterChange: (status: string) => void;
   searchQuery: string;
   onSearchChange: (q: string) => void;
+  loading: boolean;
+  error: string | null;
+  page: number;
+  hasNextPage: boolean;
+  onPageChange: (page: number) => void;
+  onRefresh: () => void;
 }
 
 export const ConversationsView: React.FC<ConversationsViewProps> = ({
@@ -20,6 +33,12 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
   onStatusFilterChange,
   searchQuery,
   onSearchChange,
+  loading,
+  error,
+  page,
+  hasNextPage,
+  onPageChange,
+  onRefresh,
 }) => {
   const statusOptions = [
     { value: "all", label: "All Threads" },
@@ -96,6 +115,26 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
           ))}
         </div>
       </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+          {error}
+        </div>
+      )}
+      {loading && (
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <RefreshCw className="w-4 h-4 animate-spin" /> Loading live SMS
+          threads...
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={onRefresh}
+        disabled={loading}
+        className="ml-auto inline-flex items-center gap-2 rounded-xl border border-slate-800 px-3 py-2 text-xs text-slate-300 disabled:opacity-40"
+      >
+        <RefreshCw className="w-3.5 h-3.5" /> Refresh
+      </button>
 
       {/* Threads Table */}
       <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl overflow-hidden shadow-sm">
@@ -187,7 +226,7 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
                           <div className="flex items-center gap-1.5 text-emerald-400 font-medium">
                             <CalendarCheck className="w-3.5 h-3.5" />
                             <span
-                              className="truncate max-w-[140px]"
+                              className="truncate max-w-35"
                               title={thread.bookingDetails.serviceType || ""}
                             >
                               {thread.bookingDetails.serviceType || "Service"}
@@ -222,6 +261,27 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
             </tbody>
           </table>
         </div>
+      </div>
+      <div className="flex items-center justify-end gap-2">
+        <span className="text-[11px] text-slate-500">Page {page}</span>
+        <button
+          type="button"
+          title="Previous page"
+          disabled={page <= 1}
+          onClick={() => onPageChange(page - 1)}
+          className="p-2 rounded-lg border border-slate-800 text-slate-400 disabled:opacity-40"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          title="Next page"
+          disabled={!hasNextPage}
+          onClick={() => onPageChange(page + 1)}
+          className="p-2 rounded-lg border border-slate-800 text-slate-400 disabled:opacity-40"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
