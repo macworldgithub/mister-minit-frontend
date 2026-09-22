@@ -57,10 +57,25 @@ export const cdrService = {
     params.append("skip", String(filters.skip ?? 0));
 
     const response = await request<
-      CdrRecord[] | { items?: CdrRecord[]; data?: CdrRecord[] }
+      | CdrRecord[]
+      | { logs?: CdrRecord[]; items?: CdrRecord[]; data?: CdrRecord[] }
     >(`/cdr/logs?${params.toString()}`);
-    return Array.isArray(response)
+    const logs = Array.isArray(response)
       ? response
-      : (response.items ?? response.data ?? []);
+      : (response.logs ?? response.items ?? response.data ?? []);
+    return logs.map((cdr) => ({
+      ...cdr,
+      callid:
+        cdr.callid ||
+        cdr.callId ||
+        (cdr as CdrRecord & { id?: string }).id ||
+        "",
+      "reason-terminated":
+        cdr["reason-terminated"] || cdr.reasonTerminated || "",
+      "from-no": cdr["from-no"] || cdr.fromNo || "",
+      "dial-no": cdr["dial-no"] || cdr.dialNo || "",
+      "time-start": cdr["time-start"] || cdr.timeStart || cdr.timestamp || "",
+      "time-end": cdr["time-end"] || cdr.timeEnd || "",
+    }));
   },
 };

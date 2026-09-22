@@ -61,11 +61,19 @@ export const smsThreadService = {
     params.append("skip", String(filters.skip ?? 0));
 
     const response = await request<
-      SmsThread[] | { items?: SmsThread[]; data?: SmsThread[] }
+      | SmsThread[]
+      | { threads?: SmsThread[]; items?: SmsThread[]; data?: SmsThread[] }
     >(`/sms-threads/live?${params.toString()}`);
-    return Array.isArray(response)
+    const threads = Array.isArray(response)
       ? response
-      : (response.items ?? response.data ?? []);
+      : (response.threads ?? response.items ?? response.data ?? []);
+    return threads.map((thread) => ({
+      ...thread,
+      _id:
+        thread._id ||
+        (thread as SmsThread & { id?: string }).id ||
+        thread.callId,
+    }));
   },
 
   async getThreadById(threadId: string): Promise<SmsThread | null> {

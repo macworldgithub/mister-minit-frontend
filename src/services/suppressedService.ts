@@ -48,11 +48,22 @@ export const suppressedService = {
     params.append("skip", String(filters?.skip ?? 0));
     const response = await request<
       | SuppressedEvent[]
-      | { items?: SuppressedEvent[]; data?: SuppressedEvent[] }
+      | {
+          events?: SuppressedEvent[];
+          items?: SuppressedEvent[];
+          data?: SuppressedEvent[];
+        }
     >(`/suppressions?${params.toString()}`);
-    return Array.isArray(response)
+    const events = Array.isArray(response)
       ? response
-      : (response.items ?? response.data ?? []);
+      : (response.events ?? response.items ?? response.data ?? []);
+    return events.map((event) => ({
+      ...event,
+      _id:
+        event._id ||
+        (event as SuppressedEvent & { id?: string }).id ||
+        event.callId,
+    }));
   },
 
   async getOptOutRecords(filters?: {
@@ -72,11 +83,23 @@ export const suppressedService = {
     params.append("limit", String(filters?.limit ?? 50));
     params.append("skip", String(filters?.skip ?? 0));
     const response = await request<
-      OptOutRecord[] | { items?: OptOutRecord[]; data?: OptOutRecord[] }
+      | OptOutRecord[]
+      | {
+          optOuts?: OptOutRecord[];
+          items?: OptOutRecord[];
+          data?: OptOutRecord[];
+        }
     >(`/suppressions/opt-outs?${params.toString()}`);
-    return Array.isArray(response)
+    const optOuts = Array.isArray(response)
       ? response
-      : (response.items ?? response.data ?? []);
+      : (response.optOuts ?? response.items ?? response.data ?? []);
+    return optOuts.map((optOut) => ({
+      ...optOut,
+      _id:
+        optOut._id ||
+        (optOut as OptOutRecord & { id?: string }).id ||
+        optOut.callerNumber,
+    }));
   },
 
   async getSummary(): Promise<SuppressionSummary> {

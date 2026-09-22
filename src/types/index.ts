@@ -73,11 +73,15 @@ export interface StoreConfig {
 
 export interface CdrRecord {
   callid: string;
+  id?: string;
   callId?: string;
   storeId?: string;
   storeName?: string;
   fromNo?: string;
   timeStart?: string;
+  timeEnd?: string;
+  reasonTerminated?: string;
+  dialNo?: string;
   callStatus?: "answered" | "missed" | string;
   timestamp: string;
   duration: string;
@@ -105,6 +109,7 @@ export type SuppressedReason =
 
 export interface SuppressedEvent {
   _id: string;
+  id?: string;
   callerNumber: string;
   did: string;
   storeId?: string;
@@ -122,6 +127,7 @@ export interface SuppressionSummary {
 
 export interface OptOutRecord {
   _id: string;
+  id?: string;
   callerNumber: string;
   keyword: string;
   optOutAt: string;
