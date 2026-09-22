@@ -1,11 +1,11 @@
 import React from "react";
-import type { StoreConfig, TimeRangeFilter } from "../../types";
+import type { StatsStore, TimeRangeFilter } from "../../types";
 import { Store, Calendar, RefreshCw, Menu } from "lucide-react";
 
 interface HeaderProps {
   title: string;
   subtitle?: string;
-  stores: StoreConfig[];
+  stores: StatsStore[];
   selectedStoreId: string;
   onSelectStore: (storeId: string) => void;
   timeRange: TimeRangeFilter;
@@ -65,8 +65,8 @@ export const Header: React.FC<HeaderProps> = ({
             </option>
             {stores.map((s) => (
               <option
-                key={s._id || s.did}
-                value={s._id || s.did}
+                key={s.storeId}
+                value={s.storeId}
                 className="bg-slate-900 text-slate-200"
               >
                 {s.storeName} ({s.did})

@@ -1,19 +1,19 @@
 // Match backend ThreadStatus enum from sms-thread.schema.ts using erasable const object
 export const ThreadStatus = {
-  PENDING: 'pending',
-  SMS_SENT: 'sms_sent',
-  ACTIVE: 'active',
-  BOOKING_REQUESTED: 'booking_requested',
-  CLOSED_VISITED: 'closed_visited',
-  CLOSED_NO_RESPONSE: 'closed_no_response',
-  CLOSED_OPTED_OUT: 'closed_opted_out',
-  CLOSED_ANSWERED: 'closed_answered',
+  PENDING: "pending",
+  SMS_SENT: "sms_sent",
+  ACTIVE: "active",
+  BOOKING_REQUESTED: "booking_requested",
+  CLOSED_VISITED: "closed_visited",
+  CLOSED_NO_RESPONSE: "closed_no_response",
+  CLOSED_OPTED_OUT: "closed_opted_out",
+  CLOSED_ANSWERED: "closed_answered",
 } as const;
 
 export type ThreadStatus = (typeof ThreadStatus)[keyof typeof ThreadStatus];
 
 export interface ConversationEntry {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   sentAt: string;
 }
@@ -75,26 +75,27 @@ export interface CdrRecord {
   callid: string;
   timestamp: string;
   duration: string;
-  'time-start': string;
-  'time-answered': string;
-  'time-end': string;
-  'reason-terminated': string;
-  'from-no': string;
-  'from-dn'?: string;
-  'dial-no': string;
+  "time-start": string;
+  "time-answered": string;
+  "time-end": string;
+  "reason-terminated": string;
+  "from-no": string;
+  "from-dn"?: string;
+  "dial-no": string;
   isMissed?: boolean;
 }
 
 export const SuppressedReason = {
-  NOT_A_PILOT_STORE: 'not_a_pilot_store',
-  NOT_MISSED_CALL: 'not_missed_call',
-  NOT_MOBILE: 'not_mobile',
-  INTERNAL_EXTENSION: 'internal_extension',
-  OPTED_OUT: 'opted_out',
-  DEDUP: 'dedup',
+  NOT_A_PILOT_STORE: "not_a_pilot_store",
+  NOT_MISSED_CALL: "not_missed_call",
+  NOT_MOBILE: "not_mobile",
+  INTERNAL_EXTENSION: "internal_extension",
+  OPTED_OUT: "opted_out",
+  DEDUP: "dedup",
 } as const;
 
-export type SuppressedReason = (typeof SuppressedReason)[keyof typeof SuppressedReason];
+export type SuppressedReason =
+  (typeof SuppressedReason)[keyof typeof SuppressedReason];
 
 export interface SuppressedEvent {
   _id: string;
@@ -112,7 +113,7 @@ export interface OptOutRecord {
   callerNumber: string;
   keyword: string;
   optOutAt: string;
-  source: 'keyword' | 'llm_detected';
+  source: "keyword" | "llm_detected";
   threadId: string;
   createdAt: string;
 }
@@ -137,6 +138,60 @@ export interface DashboardMetrics {
   suppressedCount: number;
   optOutCount: number;
   trends: DailyTrendPoint[];
+  missedRatePercentage?: number;
+  footTrafficConversions?: number;
+  serviceDemandBreakdown?: Record<string, number>;
+  threadStatusDistribution?: Record<string, number>;
+  deduplicationPrevented?: number;
+  landlineFiltering?: number;
+  answeredCallsFiltered?: number;
+  optOutRatePercentage?: number;
 }
 
-export type TimeRangeFilter = 'today' | '7d' | '30d' | 'all';
+export interface StatsStore {
+  storeId: string;
+  storeName: string;
+  did: string;
+  isActive: boolean;
+}
+
+export interface StoreComparison {
+  storeId: string;
+  storeName: string;
+  did: string;
+  isActive: boolean;
+  telephony: {
+    totalInboundCallVolume: number;
+    missedCalls: number;
+    storeMissedCallRate: number;
+  };
+  conversions: {
+    recoveredInquiries: number;
+    customerReplies: number;
+    customerEngagementRate: number;
+    bookingsCaptured: number;
+    bookingConversionRate: number;
+    footTrafficConversions: number;
+  };
+}
+
+export interface RecentLog {
+  eventType: string;
+  callerNumber: string;
+  storeName: string;
+  createdAt: string;
+}
+
+export interface PaginationInfo {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface PaginatedResult<T> {
+  items: T[];
+  pagination: PaginationInfo;
+}
+
+export type TimeRangeFilter = "today" | "7d" | "30d" | "all";

@@ -24,6 +24,9 @@ import type {
   DashboardMetrics,
   ThreadStatus,
   TimeRangeFilter,
+  StatsStore,
+  StoreComparison,
+  RecentLog,
 } from "./types";
 import { ThreadStatus as StatusEnum } from "./types";
 import "./App.css";
@@ -38,6 +41,7 @@ export function App() {
 
   // Core Dynamic Data State
   const [stores, setStores] = useState<StoreConfig[]>([]);
+  const [statsStores, setStatsStores] = useState<StatsStore[]>([]);
   const [isStoresLoading, setIsStoresLoading] = useState<boolean>(false);
   const [threads, setThreads] = useState<SmsThread[]>([]);
   const [cdrs, setCdrs] = useState<CdrRecord[]>([]);
@@ -46,6 +50,12 @@ export function App() {
   );
   const [optOutRecords, setOptOutRecords] = useState<OptOutRecord[]>([]);
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+  const [storeComparison, setStoreComparison] = useState<StoreComparison[]>([]);
+  const [recentLogs, setRecentLogs] = useState<RecentLog[]>([]);
+  const [comparisonPage, setComparisonPage] = useState(1);
+  const [logsPage, setLogsPage] = useState(1);
+  const [comparisonTotal, setComparisonTotal] = useState(0);
+  const [logsTotal, setLogsTotal] = useState(0);
 
   // Active View Modals/Drawers
   const [activeThread, setActiveThread] = useState<SmsThread | null>(null);
@@ -64,6 +74,13 @@ export function App() {
   };
 
   const isFetchingStoresRef = useRef(false);
+
+  useEffect(() => {
+    void dashboardService
+      .getStatsStores()
+      .then(setStatsStores)
+      .catch((err) => console.error("Failed to load stats stores:", err));
+  }, []);
 
   // Load stores specifically (GET /store-config)
   const loadStores = useCallback(async () => {
@@ -92,6 +109,8 @@ export function App() {
         suppressedResult,
         optoutsResult,
         metricsResult,
+        comparisonResult,
+        logsResult,
       ] = await Promise.allSettled([
         smsThreadService.getThreads({
           storeId: selectedStoreId,
@@ -112,6 +131,8 @@ export function App() {
           storeId: selectedStoreId,
           timeRange,
         }),
+        dashboardService.getStoreComparison(comparisonPage),
+        dashboardService.getRecentLogs(logsPage),
       ]);
       if (threadsResult.status === "fulfilled") {
         setThreads(threadsResult.value);
@@ -132,6 +153,16 @@ export function App() {
       if (metricsResult.status === "fulfilled") {
         setMetrics(metricsResult.value);
       }
+      if (comparisonResult.status === "fulfilled") {
+        setStoreComparison(comparisonResult.value.items);
+        setComparisonPage(comparisonResult.value.pagination.page);
+        setComparisonTotal(comparisonResult.value.pagination.total);
+      }
+      if (logsResult.status === "fulfilled") {
+        setRecentLogs(logsResult.value.items);
+        setLogsPage(logsResult.value.pagination.page);
+        setLogsTotal(logsResult.value.pagination.total);
+      }
     } catch (err) {
       console.error("Failed to load data:", err);
     } finally {
@@ -145,6 +176,8 @@ export function App() {
     cdrSearchQuery,
     suppressedReasonFilter,
     timeRange,
+    comparisonPage,
+    logsPage,
   ]);
 
   useEffect(() => {
@@ -318,7 +351,7 @@ export function App() {
         <Header
           title={titles[currentTab].title}
           subtitle={titles[currentTab].subtitle}
-          stores={stores}
+          stores={statsStores}
           selectedStoreId={selectedStoreId}
           onSelectStore={setSelectedStoreId}
           timeRange={timeRange}
@@ -336,6 +369,14 @@ export function App() {
                 metrics={metrics}
                 recentThreads={threads}
                 stores={stores}
+                storeComparison={storeComparison}
+                recentLogs={recentLogs}
+                comparisonPage={comparisonPage}
+                comparisonTotal={comparisonTotal}
+                onComparisonPageChange={setComparisonPage}
+                logsPage={logsPage}
+                logsTotal={logsTotal}
+                onLogsPageChange={setLogsPage}
                 onSelectThread={setActiveThread}
                 onNavigateTab={setCurrentTab}
               />

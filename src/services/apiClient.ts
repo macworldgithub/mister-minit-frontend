@@ -8,7 +8,7 @@
 export const API_CONFIG = {
   baseURL:
     (import.meta as { env?: Record<string, string> }).env?.VITE_API_URL ||
-    "https://www.mister-minit.omnisuiteai.com",
+    "https://mister-minit.omnisuiteai.com/",
   // Allow toggling via VITE_USE_MOCK in env or window.localStorage('USE_MOCK')
   useMock:
     typeof window !== "undefined" &&
@@ -24,7 +24,7 @@ export async function request<T>(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const url = `${API_CONFIG.baseURL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+  const url = `${API_CONFIG.baseURL.replace(/\/$/, "")}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
   const headers = {
     "Content-Type": "application/json",
     Accept: "application/json",
