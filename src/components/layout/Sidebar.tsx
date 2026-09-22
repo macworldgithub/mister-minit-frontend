@@ -142,7 +142,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Backend Mode Status Card */}
-        <div className="p-4 m-3 rounded-xl bg-slate-950/60 border border-slate-800/60">
+        {/* <div className="p-4 m-3 rounded-xl bg-slate-950/60 border border-slate-800/60">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <Server className="w-3.5 h-3.5 text-slate-400" />
@@ -163,7 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Zap className="w-3 h-3 text-blue-400" />
             <span>Telephony: 3CX PBX Ingestion</span>
           </div>
-        </div>
+        </div> */}
       </aside>
     </>
   );
