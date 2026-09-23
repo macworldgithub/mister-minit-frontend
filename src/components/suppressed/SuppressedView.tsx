@@ -13,7 +13,6 @@ import {
   RefreshCw,
   Search,
   ShieldAlert,
-  Trash2,
   UserX,
 } from "lucide-react";
 
@@ -45,7 +44,6 @@ const reasonLabel = (reason: SuppressedReason) => reason.replace(/_/g, " ");
 export const SuppressedView: React.FC<SuppressedViewProps> = ({
   suppressedEvents,
   optOutRecords,
-  onRemoveOptOut,
   reasonFilter,
   onReasonFilterChange,
   summary,
@@ -229,7 +227,7 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
                   <th className="p-4">Keyword</th>
                   <th className="p-4">Trigger Source</th>
                   <th className="p-4">Opted Out</th>
-                  <th className="p-4 text-right">Action</th>
+                  {/* <th className="p-4 text-right">Action</th> */}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/40">
@@ -257,12 +255,12 @@ export const SuppressedView: React.FC<SuppressedViewProps> = ({
                         {new Date(opt.optOutAt).toLocaleString()}
                       </td>
                       <td className="p-4 text-right">
-                        <button
+                        {/* <button
                           onClick={() => onRemoveOptOut(opt.callerNumber)}
                           className="inline-flex items-center gap-1 rounded-lg border border-rose-500/25 px-2.5 py-1 text-[11px] text-rose-300"
                         >
                           <Trash2 className="w-3 h-3" /> Re-enable
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))

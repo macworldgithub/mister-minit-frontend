@@ -21,7 +21,7 @@ const StoreFormContent: React.FC<{
   const [address, setAddress] = useState(store?.address || "");
   const [tradingHours, setTradingHours] = useState(
     store?.tradingHours ||
-    "Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: Closed",
+      "Mon-Fri 9:00am–5:30pm, Sat 9:00am–5:00pm, Sun: Closed",
   );
   const [googleMapsLink, setGoogleMapsLink] = useState(
     store?.googleMapsLink || "",
@@ -32,9 +32,7 @@ const StoreFormContent: React.FC<{
   const [actionNotes, setActionNotes] = useState<string>(
     store?.actionNotes || "Direct to Mobile Van",
   );
-  const [bookingLink, setBookingLink] = useState(
-    store?.bookingLink || "",
-  );
+  const [bookingLink, setBookingLink] = useState(store?.bookingLink || "");
   const [isActive, setIsActive] = useState(store ? store.isActive : true);
   const [staffContacts, setStaffContacts] = useState<StaffContact[]>(
     store?.staffContacts && store.staffContacts.length > 0
@@ -210,7 +208,9 @@ const StoreFormContent: React.FC<{
               className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl px-3 py-2 text-xs text-white outline-none transition-colors cursor-pointer"
             >
               <option value="Direct to Mobile Van">Direct to Mobile Van</option>
-              <option value="Direct to HQ Reception">Direct to HQ Reception</option>
+              <option value="Direct to HQ Reception">
+                Direct to HQ Reception
+              </option>
             </select>
           </div>
         </div>

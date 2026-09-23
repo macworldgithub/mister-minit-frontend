@@ -5,6 +5,7 @@ import {
   Store,
   PhoneCall,
   ShieldAlert,
+  Archive,
   X,
 } from "lucide-react";
 
@@ -13,7 +14,8 @@ export type NavTab =
   | "conversations"
   | "stores"
   | "cdr"
-  | "suppressed";
+  | "suppressed"
+  | "closed";
 
 interface SidebarProps {
   currentTab: NavTab;
@@ -46,6 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: "stores", label: "Store Configs", icon: Store },
     { id: "cdr", label: "3CX Call Logs", icon: PhoneCall },
     { id: "suppressed", label: "Suppression & Opt-outs", icon: ShieldAlert },
+    { id: "closed", label: "Resolved Inquiries", icon: Archive },
   ];
 
   return (

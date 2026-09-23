@@ -4,6 +4,7 @@ import type { NavTab } from "./components/layout/Sidebar";
 import { Header } from "./components/layout/Header";
 import { OverviewView } from "./components/dashboard/OverviewView";
 import { ConversationsView } from "./components/conversations/ConversationsView";
+import { ClosedInquiriesView } from "./components/conversations/ClosedInquiriesView";
 import { ThreadDrawer } from "./components/conversations/ThreadDrawer";
 import { StoresView } from "./components/stores/StoresView";
 import { CdrView } from "./components/cdr/CdrView";
@@ -11,6 +12,7 @@ import { SuppressedView } from "./components/suppressed/SuppressedView";
 
 import { storeConfigService } from "./services/storeConfigService";
 import { smsThreadService } from "./services/smsThreadService";
+import type { ClosedThreadStatus } from "./services/smsThreadService";
 import { cdrService } from "./services/cdrService";
 import { suppressedService } from "./services/suppressedService";
 import { dashboardService } from "./services/dashboardService";
@@ -45,6 +47,7 @@ export function App() {
   const [statsStores, setStatsStores] = useState<StatsStore[]>([]);
   const [isStoresLoading, setIsStoresLoading] = useState<boolean>(false);
   const [threads, setThreads] = useState<SmsThread[]>([]);
+  const [closedThreads, setClosedThreads] = useState<SmsThread[]>([]);
   const [cdrs, setCdrs] = useState<CdrRecord[]>([]);
   const [suppressedEvents, setSuppressedEvents] = useState<SuppressedEvent[]>(
     [],
@@ -61,11 +64,13 @@ export function App() {
     useState<SuppressionSummary | null>(null);
   const [moduleLoading, setModuleLoading] = useState({
     conversations: false,
+    closed: false,
     cdr: false,
     suppressed: false,
   });
   const [moduleErrors, setModuleErrors] = useState({
     conversations: null as string | null,
+    closed: null as string | null,
     cdr: null as string | null,
     suppressed: null as string | null,
   });
@@ -76,10 +81,16 @@ export function App() {
 
   // Active View Modals/Drawers
   const [activeThread, setActiveThread] = useState<SmsThread | null>(null);
+  const [activeClosedThread, setActiveClosedThread] =
+    useState<SmsThread | null>(null);
 
   // Filters within views
   const [threadStatusFilter, setThreadStatusFilter] = useState<string>("all");
   const [threadSearchQuery, setThreadSearchQuery] = useState<string>("");
+  const [closedStatusFilter, setClosedStatusFilter] = useState("all");
+  const [closedSearchInput, setClosedSearchInput] = useState("");
+  const [closedSearchQuery, setClosedSearchQuery] = useState("");
+  const [closedPage, setClosedPage] = useState(1);
   const [cdrStatusFilter, setCdrStatusFilter] = useState<
     "all" | "missed" | "answered"
   >("all");
@@ -104,6 +115,14 @@ export function App() {
       .catch((err) => console.error("Failed to load stats stores:", err));
   }, []);
 
+  useEffect(() => {
+    const timer = window.setTimeout(
+      () => setClosedSearchQuery(closedSearchInput.trim()),
+      300,
+    );
+    return () => window.clearTimeout(timer);
+  }, [closedSearchInput]);
+
   // Load stores specifically (GET /store-config)
   const loadStores = useCallback(async () => {
     if (isFetchingStoresRef.current) return;
@@ -124,11 +143,22 @@ export function App() {
   // Load all dynamic data based on active filters
   const loadData = useCallback(async () => {
     setIsRefreshing(true);
-    setModuleLoading({ conversations: true, cdr: true, suppressed: true });
-    setModuleErrors({ conversations: null, cdr: null, suppressed: null });
+    setModuleLoading({
+      conversations: true,
+      closed: true,
+      cdr: true,
+      suppressed: true,
+    });
+    setModuleErrors({
+      conversations: null,
+      closed: null,
+      cdr: null,
+      suppressed: null,
+    });
     try {
       const [
         threadsResult,
+        closedThreadsResult,
         cdrsResult,
         suppressedResult,
         optoutsResult,
@@ -143,6 +173,13 @@ export function App() {
           search: threadSearchQuery,
           limit: 50,
           skip: (threadPage - 1) * 50,
+        }),
+        smsThreadService.getClosedThreads({
+          storeId: selectedStoreId,
+          status: closedStatusFilter as ClosedThreadStatus,
+          search: closedSearchQuery,
+          limit: 50,
+          skip: (closedPage - 1) * 50,
         }),
         cdrService.getCdrRecords({
           storeId: selectedStoreId,
@@ -176,6 +213,16 @@ export function App() {
         dashboardService.getRecentLogs(logsPage),
       ]);
       if (threadsResult.status === "fulfilled") {
+        if (closedThreadsResult.status === "fulfilled") {
+          setClosedThreads(closedThreadsResult.value);
+          setActiveClosedThread((current) =>
+            current
+              ? closedThreadsResult.value.find(
+                  (thread) => thread._id === current._id,
+                ) || null
+              : closedThreadsResult.value[0] || null,
+          );
+        }
         setThreads(threadsResult.value);
         setActiveThread((curr) => {
           if (!curr) return null;
@@ -212,6 +259,10 @@ export function App() {
           threadsResult.status === "rejected"
             ? "Unable to load live SMS threads."
             : null,
+        closed:
+          closedThreadsResult.status === "rejected"
+            ? "Unable to load resolved inquiries."
+            : null,
         cdr:
           cdrsResult.status === "rejected"
             ? "Unable to load live 3CX call logs."
@@ -227,7 +278,12 @@ export function App() {
       console.error("Failed to load data:", err);
     } finally {
       setIsRefreshing(false);
-      setModuleLoading({ conversations: false, cdr: false, suppressed: false });
+      setModuleLoading({
+        conversations: false,
+        closed: false,
+        cdr: false,
+        suppressed: false,
+      });
     }
   }, [
     selectedStoreId,
@@ -243,6 +299,9 @@ export function App() {
     comparisonPage,
     logsPage,
     threadPage,
+    closedStatusFilter,
+    closedSearchQuery,
+    closedPage,
     cdrPage,
     suppressedPage,
     optOutPage,
@@ -397,6 +456,11 @@ export function App() {
       subtitle:
         "Audit trail of suppressed SMS triggers and customer unsubscribe list",
     },
+    closed: {
+      title: "Resolved Inquiries",
+      subtitle:
+        "Review historical missed-call recovery conversations, captured store visits, and call resolutions.",
+    },
   };
 
   return (
@@ -516,6 +580,29 @@ export function App() {
                 hasNextOptOutPage={optOutRecords.length === 50}
                 onSuppressedPageChange={setSuppressedPage}
                 onOptOutPageChange={setOptOutPage}
+              />
+            )}
+
+            {currentTab === "closed" && (
+              <ClosedInquiriesView
+                threads={closedThreads}
+                selectedThread={activeClosedThread}
+                onSelectThread={setActiveClosedThread}
+                statusFilter={closedStatusFilter}
+                onStatusFilterChange={(status) => {
+                  setClosedStatusFilter(status);
+                  setClosedPage(1);
+                }}
+                searchQuery={closedSearchInput}
+                onSearchChange={(query) => {
+                  setClosedSearchInput(query);
+                  setClosedPage(1);
+                }}
+                loading={moduleLoading.closed}
+                error={moduleErrors.closed}
+                page={closedPage}
+                hasNextPage={closedThreads.length === 50}
+                onPageChange={setClosedPage}
               />
             )}
           </div>

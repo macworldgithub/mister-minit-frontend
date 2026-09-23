@@ -3,7 +3,6 @@ import type { SmsThread, ThreadStatus } from "../../types";
 import { ThreadStatus as StatusEnum } from "../../types";
 import {
   X,
-  Send,
   CalendarCheck,
   Phone,
   Store,
@@ -176,12 +175,12 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
             <option value={StatusEnum.CLOSED_ANSWERED}>
               Closed — Phone Answered
             </option>
-            <option value={StatusEnum.CLOSED_NO_RESPONSE}>
+            {/* <option value={StatusEnum.CLOSED_NO_RESPONSE}>
               Closed — No Response
-            </option>
-            <option value={StatusEnum.CLOSED_OPTED_OUT}>
+            </option> */}
+            {/* <option value={StatusEnum.CLOSED_OPTED_OUT}>
               Closed — Opted Out
-            </option>
+            </option> */}
           </select>
         </div>
 
@@ -245,7 +244,7 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
           onSubmit={handleSend}
           className="p-4 bg-slate-950/80 border-t border-slate-800/60 flex items-center gap-2"
         >
-          <input
+          {/* <input
             type="text"
             placeholder={
               thread.optedOut
@@ -256,14 +255,14 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
             className="flex-1 bg-slate-900/50 border border-slate-800/60 focus:border-blue-500/60 rounded-xl px-3.5 py-2 text-xs text-white placeholder:text-slate-500 outline-none transition-colors disabled:opacity-40"
-          />
-          <button
+          /> */}
+          {/* <button
             type="submit"
             disabled={thread.optedOut || !replyText.trim()}
             className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition-all disabled:opacity-40 cursor-pointer"
           >
             <Send className="w-4 h-4" />
-          </button>
+          </button> */}
         </form>
       </div>
     </div>

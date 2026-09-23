@@ -41,13 +41,9 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
   onRefresh,
 }) => {
   const statusOptions = [
-    { value: "all", label: "All Threads" },
-    { value: StatusEnum.BOOKING_REQUESTED, label: "Bookings Requested" },
-    { value: StatusEnum.ACTIVE, label: "Active Dialogues" },
-    { value: StatusEnum.SMS_SENT, label: "SMS Sent (Awaiting)" },
-    { value: StatusEnum.CLOSED_VISITED, label: "Customer Visited" },
-    { value: StatusEnum.CLOSED_NO_RESPONSE, label: "No Response" },
-    { value: StatusEnum.CLOSED_OPTED_OUT, label: "Opted Out" },
+    { value: "all", label: "All Live" },
+    { value: StatusEnum.SMS_SENT, label: "Awaiting Reply" },
+    { value: StatusEnum.BOOKING_REQUESTED, label: "Booking Requested" },
   ];
 
   const getStatusBadge = (status: ThreadStatus) => {

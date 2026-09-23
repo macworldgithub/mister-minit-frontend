@@ -13,6 +13,13 @@ export interface ThreadFilters {
   skip?: number;
 }
 
+export type ClosedThreadStatus =
+  | "all"
+  | "closed_visited"
+  | "closed_answered"
+  | "closed_no_response"
+  | "closed_opted_out";
+
 export const smsThreadService = {
   async getThreads(filters: ThreadFilters = {}): Promise<SmsThread[]> {
     if (API_CONFIG.useMock) {
@@ -74,6 +81,68 @@ export const smsThreadService = {
         (thread as SmsThread & { id?: string }).id ||
         thread.callId,
     }));
+  },
+
+  async getClosedThreads(
+    filters: {
+      storeId?: string;
+      status?: ClosedThreadStatus;
+      search?: string;
+      limit?: number;
+      skip?: number;
+    } = {},
+  ): Promise<SmsThread[]> {
+    if (API_CONFIG.useMock) {
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      return mockThreads.filter((thread) => {
+        if (
+          !thread.status.startsWith("closed_") ||
+          thread.status === "closed_opted_out"
+        )
+          return false;
+        if (
+          filters.storeId &&
+          filters.storeId !== "all" &&
+          thread.storeId !== filters.storeId
+        )
+          return false;
+        if (
+          filters.status &&
+          filters.status !== "all" &&
+          thread.status !== filters.status
+        )
+          return false;
+        if (filters.search && !thread.callerNumber.includes(filters.search))
+          return false;
+        return true;
+      });
+    }
+
+    const params = new URLSearchParams();
+    if (filters.storeId && filters.storeId !== "all")
+      params.append("storeId", filters.storeId);
+    if (filters.status && filters.status !== "all")
+      params.append("status", filters.status);
+    if (filters.search) params.append("search", filters.search);
+    params.append("limit", String(filters.limit ?? 50));
+    params.append("skip", String(filters.skip ?? 0));
+
+    const response = await request<
+      | SmsThread[]
+      | { threads?: SmsThread[]; items?: SmsThread[]; data?: SmsThread[] }
+    >(`/sms-threads/closed?${params.toString()}`);
+    const threads = Array.isArray(response)
+      ? response
+      : (response.threads ?? response.items ?? response.data ?? []);
+    return threads
+      .filter((thread) => thread.status !== "closed_opted_out")
+      .map((thread) => ({
+        ...thread,
+        _id:
+          thread._id ||
+          (thread as SmsThread & { id?: string }).id ||
+          thread.callId,
+      }));
   },
 
   async getThreadById(threadId: string): Promise<SmsThread | null> {

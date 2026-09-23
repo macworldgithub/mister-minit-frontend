@@ -24,7 +24,7 @@ export const Header: React.FC<HeaderProps> = ({
   timeRange,
   onSelectTimeRange,
   onRefresh,
-  isRefreshing = false,
+  isRefreshing =false,
   onOpenMobileMenu,
 }) => {
   return (
