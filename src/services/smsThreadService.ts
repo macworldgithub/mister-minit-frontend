@@ -9,8 +9,6 @@ export interface ThreadFilters {
   storeId?: string;
   status?: string;
   search?: string;
-  startDate?: string;
-  endDate?: string;
   limit?: number;
   skip?: number;
 }
@@ -41,16 +39,6 @@ export const smsThreadService = {
         ) {
           return false;
         }
-        if (filters.startDate) {
-          const start = new Date(filters.startDate);
-          start.setHours(0, 0, 0, 0);
-          if (new Date(thread.createdAt) < start) return false;
-        }
-        if (filters.endDate) {
-          const end = new Date(filters.endDate);
-          end.setHours(23, 59, 59, 999);
-          if (new Date(thread.createdAt) > end) return false;
-        }
         if (filters.search) {
           const q = filters.search.toLowerCase();
           const matchCaller = thread.callerNumber.toLowerCase().includes(q);
@@ -76,26 +64,13 @@ export const smsThreadService = {
     if (filters.status && filters.status !== "all")
       params.append("status", filters.status);
     if (filters.search) params.append("search", filters.search);
-    if (filters.startDate) params.append("startDate", filters.startDate);
-    if (filters.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters.limit ?? 50));
     params.append("skip", String(filters.skip ?? 0));
-
-    // When status is "all" or not specified, use master /sms-threads endpoint
-    // to return all threads (both live and closed).
-    let path = "/sms-threads";
-    if (filters.status === "live") {
-      path = "/sms-threads/live";
-    } else if (filters.status === "closed") {
-      path = "/sms-threads/closed";
-    } else if (filters.status && filters.status !== "all") {
-      path = "/sms-threads";
-    }
 
     const response = await request<
       | SmsThread[]
       | { threads?: SmsThread[]; items?: SmsThread[]; data?: SmsThread[] }
-    >(`${path}?${params.toString()}`);
+    >(`/sms-threads/live?${params.toString()}`);
     const threads = Array.isArray(response)
       ? response
       : (response.threads ?? response.items ?? response.data ?? []);
@@ -113,8 +88,6 @@ export const smsThreadService = {
       storeId?: string;
       status?: ClosedThreadStatus;
       search?: string;
-      startDate?: string;
-      endDate?: string;
       limit?: number;
       skip?: number;
     } = {},
@@ -139,16 +112,6 @@ export const smsThreadService = {
           thread.status !== filters.status
         )
           return false;
-        if (filters.startDate) {
-          const start = new Date(filters.startDate);
-          start.setHours(0, 0, 0, 0);
-          if (new Date(thread.createdAt) < start) return false;
-        }
-        if (filters.endDate) {
-          const end = new Date(filters.endDate);
-          end.setHours(23, 59, 59, 999);
-          if (new Date(thread.createdAt) > end) return false;
-        }
         if (filters.search && !thread.callerNumber.includes(filters.search))
           return false;
         return true;
@@ -161,8 +124,6 @@ export const smsThreadService = {
     if (filters.status && filters.status !== "all")
       params.append("status", filters.status);
     if (filters.search) params.append("search", filters.search);
-    if (filters.startDate) params.append("startDate", filters.startDate);
-    if (filters.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters.limit ?? 50));
     params.append("skip", String(filters.skip ?? 0));
 

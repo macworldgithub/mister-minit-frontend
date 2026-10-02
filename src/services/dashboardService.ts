@@ -41,7 +41,7 @@ interface StatsResponse {
   };
 }
 
-export function getDateRange(timeRange?: TimeRangeFilter) {
+function getDateRange(timeRange?: TimeRangeFilter) {
   if (!timeRange || timeRange === "all") return {};
 
   const endDate = new Date();

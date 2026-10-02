@@ -24,8 +24,6 @@ interface ConversationsViewProps {
   hasNextPage: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
-  storeName?: string;
-  timeRangeLabel?: string;
 }
 
 export const ConversationsView: React.FC<ConversationsViewProps> = ({
@@ -41,16 +39,11 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
   hasNextPage,
   onPageChange,
   onRefresh,
-  storeName = "All Pilot Stores",
-  timeRangeLabel = "Last 7 Days",
 }) => {
   const statusOptions = [
-    { value: "all", label: "All Inquiries" },
-    { value: "live", label: "Live & Active" },
+    { value: "all", label: "All Live" },
     { value: StatusEnum.SMS_SENT, label: "Awaiting Reply" },
-    { value: StatusEnum.ACTIVE, label: "Customer Replied" },
     { value: StatusEnum.BOOKING_REQUESTED, label: "Booking Requested" },
-    { value: "closed", label: "Resolved" },
   ];
 
   const getStatusBadge = (status: ThreadStatus) => {
@@ -58,17 +51,13 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
       case StatusEnum.BOOKING_REQUESTED:
         return "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
       case StatusEnum.ACTIVE:
-        return "bg-blue-500/15 text-blue-300 border-blue-500/30";
+        return "bg-slate-800 text-slate-200 border-slate-700/80";
       case StatusEnum.SMS_SENT:
-        return "bg-amber-500/15 text-amber-300 border-amber-500/30";
+        return "bg-slate-800/80 text-slate-300 border-slate-700/60";
       case StatusEnum.CLOSED_VISITED:
-        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-      case StatusEnum.CLOSED_ANSWERED:
-        return "bg-sky-500/10 text-sky-400 border-sky-500/20";
-      case StatusEnum.CLOSED_NO_RESPONSE:
-        return "bg-slate-800 text-slate-400 border-slate-700/60";
+        return "bg-slate-800/60 text-slate-400 border-slate-700/50";
       case StatusEnum.CLOSED_OPTED_OUT:
-        return "bg-red-500/10 text-red-400 border-red-500/20";
+        return "bg-slate-900 text-slate-500 border-slate-800";
       default:
         return "bg-slate-800/60 text-slate-300 border-slate-700/60";
     }
@@ -90,7 +79,7 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Controls Bar: Search & Status Pills */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Search Input */}
@@ -123,35 +112,25 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
         </div>
       </div>
 
-      {/* Scope / Filter Context Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-xs text-slate-400">
-        <div>
-          Showing <span className="font-semibold text-white">{threads.length}</span>{" "}
-          {statusFilter === "all" ? "total inquiries" : `${statusFilter.replace(/_/g, " ")} threads`} for{" "}
-          <span className="font-semibold text-slate-200">{storeName}</span> ({timeRangeLabel})
-        </div>
-        <div className="flex items-center gap-2">
-          {loading && (
-            <span className="inline-flex items-center gap-1.5 text-xs text-blue-400">
-              <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Updating...
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={onRefresh}
-            disabled={loading}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-800 px-2.5 py-1 text-xs text-slate-300 hover:text-white hover:bg-slate-800/60 transition-colors disabled:opacity-40 cursor-pointer"
-          >
-            <RefreshCw className="w-3 h-3" /> Refresh
-          </button>
-        </div>
-      </div>
-
       {error && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
           {error}
         </div>
       )}
+      {loading && (
+        <div className="flex items-center gap-2 text-xs text-slate-400">
+          <RefreshCw className="w-4 h-4 animate-spin" /> Loading live SMS
+          threads...
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={onRefresh}
+        disabled={loading}
+        className="ml-auto inline-flex items-center gap-2 rounded-xl border border-slate-800 px-3 py-2 text-xs text-slate-300 disabled:opacity-40"
+      >
+        <RefreshCw className="w-3.5 h-3.5" /> Refresh
+      </button>
 
       {/* Threads Table */}
       <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl overflow-hidden shadow-sm">
@@ -173,10 +152,7 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-400">
                     <MessageSquare className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-                    <p className="font-medium text-slate-300">No SMS inquiries found matching your filters.</p>
-                    <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-                      Try selecting <span className="text-slate-300 font-medium">"All Inquiries"</span> above or switching the date filter in the top navigation bar.
-                    </p>
+                    No SMS threads found matching your filters.
                   </td>
                 </tr>
               ) : (
