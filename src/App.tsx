@@ -15,7 +15,7 @@ import { smsThreadService } from "./services/smsThreadService";
 import type { ClosedThreadStatus } from "./services/smsThreadService";
 import { cdrService } from "./services/cdrService";
 import { suppressedService } from "./services/suppressedService";
-import { dashboardService } from "./services/dashboardService";
+import { dashboardService, getDateRange } from "./services/dashboardService";
 
 import type {
   StoreConfig,
@@ -155,6 +155,7 @@ export function App() {
       cdr: null,
       suppressed: null,
     });
+    const dateRange = getDateRange(timeRange);
     try {
       const [
         threadsResult,
@@ -171,6 +172,8 @@ export function App() {
           storeId: selectedStoreId,
           status: threadStatusFilter,
           search: threadSearchQuery,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
           limit: 50,
           skip: (threadPage - 1) * 50,
         }),
@@ -178,6 +181,8 @@ export function App() {
           storeId: selectedStoreId,
           status: closedStatusFilter as ClosedThreadStatus,
           search: closedSearchQuery,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
           limit: 50,
           skip: (closedPage - 1) * 50,
         }),
@@ -188,6 +193,8 @@ export function App() {
               ? undefined
               : cdrStatusFilter === "missed",
           search: cdrSearchQuery,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
           limit: 50,
           skip: (cdrPage - 1) * 50,
         }),
@@ -195,12 +202,16 @@ export function App() {
           storeId: selectedStoreId,
           reason: suppressedReasonFilter,
           search: suppressedSearchQuery,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
           limit: 50,
           skip: (suppressedPage - 1) * 50,
         }),
         suppressedService.getOptOutRecords({
           search: optOutSearchQuery,
           source: optOutSourceFilter,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
           limit: 50,
           skip: (optOutPage - 1) * 50,
         }),
@@ -463,6 +474,21 @@ export function App() {
     },
   };
 
+  const selectedStoreName =
+    selectedStoreId === "all"
+      ? "All Pilot Stores"
+      : statsStores.find((s) => s.storeId === selectedStoreId)?.storeName ||
+        stores.find((s) => s._id === selectedStoreId || s.did === selectedStoreId)?.storeName ||
+        "Selected Store";
+
+  const timeRangeLabels: Record<TimeRangeFilter, string> = {
+    today: "Today",
+    "7d": "Last 7 Days",
+    "30d": "Last 30 Days",
+    all: "All Time",
+  };
+  const timeRangeLabel = timeRangeLabels[timeRange] || "Last 7 Days";
+
   return (
     <div className="flex h-screen w-full bg-[#090d16] text-slate-100 overflow-hidden">
       {/* Sidebar */}
@@ -529,6 +555,8 @@ export function App() {
                 hasNextPage={threads.length === 50}
                 onPageChange={setThreadPage}
                 onRefresh={loadData}
+                storeName={selectedStoreName}
+                timeRangeLabel={timeRangeLabel}
               />
             )}
 

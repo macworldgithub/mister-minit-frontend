@@ -14,6 +14,8 @@ export const suppressedService = {
     reason?: string;
     storeId?: string;
     search?: string;
+    startDate?: string;
+    endDate?: string;
     limit?: number;
     skip?: number;
   }): Promise<SuppressedEvent[]> {
@@ -44,6 +46,8 @@ export const suppressedService = {
     if (filters?.storeId && filters.storeId !== "all")
       params.append("storeId", filters.storeId);
     if (filters?.search) params.append("search", filters.search);
+    if (filters?.startDate) params.append("startDate", filters.startDate);
+    if (filters?.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters?.limit ?? 50));
     params.append("skip", String(filters?.skip ?? 0));
     const response = await request<
@@ -69,6 +73,8 @@ export const suppressedService = {
   async getOptOutRecords(filters?: {
     search?: string;
     source?: string;
+    startDate?: string;
+    endDate?: string;
     limit?: number;
     skip?: number;
   }): Promise<OptOutRecord[]> {
@@ -80,6 +86,8 @@ export const suppressedService = {
     if (filters?.search) params.append("search", filters.search);
     if (filters?.source && filters.source !== "all")
       params.append("source", filters.source);
+    if (filters?.startDate) params.append("startDate", filters.startDate);
+    if (filters?.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters?.limit ?? 50));
     params.append("skip", String(filters?.skip ?? 0));
     const response = await request<

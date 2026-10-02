@@ -98,6 +98,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         <MetricCard
           label="Recovered Inquiries"
           value={metrics.smsSent}
+          subValue="Outbound SMS dispatched"
           change="Live"
           trend="up"
           icon={Send}
