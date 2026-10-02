@@ -14,6 +14,8 @@ export const suppressedService = {
     reason?: string;
     storeId?: string;
     search?: string;
+    startDate?: string;
+    endDate?: string;
     limit?: number;
     skip?: number;
   }): Promise<SuppressedEvent[]> {
@@ -34,6 +36,13 @@ export const suppressedService = {
         ) {
           return false;
         }
+        const evDate = new Date(ev.createdAt);
+        if (filters?.startDate && evDate < new Date(filters.startDate)) {
+          return false;
+        }
+        if (filters?.endDate && evDate > new Date(filters.endDate)) {
+          return false;
+        }
         return true;
       });
     }
@@ -44,6 +53,8 @@ export const suppressedService = {
     if (filters?.storeId && filters.storeId !== "all")
       params.append("storeId", filters.storeId);
     if (filters?.search) params.append("search", filters.search);
+    if (filters?.startDate) params.append("startDate", filters.startDate);
+    if (filters?.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters?.limit ?? 50));
     params.append("skip", String(filters?.skip ?? 0));
     const response = await request<
@@ -69,17 +80,36 @@ export const suppressedService = {
   async getOptOutRecords(filters?: {
     search?: string;
     source?: string;
+    startDate?: string;
+    endDate?: string;
     limit?: number;
     skip?: number;
   }): Promise<OptOutRecord[]> {
     if (API_CONFIG.useMock) {
       await new Promise((r) => setTimeout(r, 80));
-      return [...mockOptOuts];
+      return mockOptOuts.filter((opt) => {
+        if (filters?.source && filters.source !== "all" && opt.source !== filters.source) {
+          return false;
+        }
+        if (filters?.search && !opt.callerNumber.includes(filters.search)) {
+          return false;
+        }
+        const optDate = new Date(opt.optOutAt);
+        if (filters?.startDate && optDate < new Date(filters.startDate)) {
+          return false;
+        }
+        if (filters?.endDate && optDate > new Date(filters.endDate)) {
+          return false;
+        }
+        return true;
+      });
     }
     const params = new URLSearchParams();
     if (filters?.search) params.append("search", filters.search);
     if (filters?.source && filters.source !== "all")
       params.append("source", filters.source);
+    if (filters?.startDate) params.append("startDate", filters.startDate);
+    if (filters?.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters?.limit ?? 50));
     params.append("skip", String(filters?.skip ?? 0));
     const response = await request<

@@ -93,6 +93,8 @@ export interface CdrRecord {
   "from-dn"?: string;
   "dial-no": string;
   isMissed?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const SuppressedReason = {

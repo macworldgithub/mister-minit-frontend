@@ -10,6 +10,8 @@ export interface CdrFilters {
   isMissed?: boolean;
   missedOnly?: boolean;
   search?: string;
+  startDate?: string;
+  endDate?: string;
   limit?: number;
   skip?: number;
 }
@@ -27,6 +29,13 @@ export const cdrService = {
           return false;
         }
         if (filters.missedOnly && !cdr.isMissed) {
+          return false;
+        }
+        const cdrDate = new Date(cdr["time-start"] || cdr.createdAt || 0);
+        if (filters.startDate && cdrDate < new Date(filters.startDate)) {
+          return false;
+        }
+        if (filters.endDate && cdrDate > new Date(filters.endDate)) {
           return false;
         }
         if (filters.search) {
@@ -53,6 +62,8 @@ export const cdrService = {
       params.append("isMissed", String(filters.isMissed));
     else if (filters.missedOnly) params.append("isMissed", "true");
     if (filters.search) params.append("search", filters.search);
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters.limit ?? 50));
     params.append("skip", String(filters.skip ?? 0));
 

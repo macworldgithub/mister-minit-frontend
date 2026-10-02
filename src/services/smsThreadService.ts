@@ -9,6 +9,8 @@ export interface ThreadFilters {
   storeId?: string;
   status?: string;
   search?: string;
+  startDate?: string;
+  endDate?: string;
   limit?: number;
   skip?: number;
 }
@@ -19,6 +21,16 @@ export type ClosedThreadStatus =
   | "closed_answered"
   | "closed_no_response"
   | "closed_opted_out";
+
+export interface ClosedThreadFilters {
+  storeId?: string;
+  status?: ClosedThreadStatus;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+  limit?: number;
+  skip?: number;
+}
 
 export const smsThreadService = {
   async getThreads(filters: ThreadFilters = {}): Promise<SmsThread[]> {
@@ -37,6 +49,12 @@ export const smsThreadService = {
           filters.status !== "all" &&
           thread.status !== filters.status
         ) {
+          return false;
+        }
+        if (filters.startDate && new Date(thread.createdAt) < new Date(filters.startDate)) {
+          return false;
+        }
+        if (filters.endDate && new Date(thread.createdAt) > new Date(filters.endDate)) {
           return false;
         }
         if (filters.search) {
@@ -64,6 +82,8 @@ export const smsThreadService = {
     if (filters.status && filters.status !== "all")
       params.append("status", filters.status);
     if (filters.search) params.append("search", filters.search);
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters.limit ?? 50));
     params.append("skip", String(filters.skip ?? 0));
 
@@ -84,13 +104,7 @@ export const smsThreadService = {
   },
 
   async getClosedThreads(
-    filters: {
-      storeId?: string;
-      status?: ClosedThreadStatus;
-      search?: string;
-      limit?: number;
-      skip?: number;
-    } = {},
+    filters: ClosedThreadFilters = {},
   ): Promise<SmsThread[]> {
     if (API_CONFIG.useMock) {
       await new Promise((resolve) => setTimeout(resolve, 120));
@@ -112,6 +126,12 @@ export const smsThreadService = {
           thread.status !== filters.status
         )
           return false;
+        if (filters.startDate && new Date(thread.createdAt) < new Date(filters.startDate)) {
+          return false;
+        }
+        if (filters.endDate && new Date(thread.createdAt) > new Date(filters.endDate)) {
+          return false;
+        }
         if (filters.search && !thread.callerNumber.includes(filters.search))
           return false;
         return true;
@@ -124,6 +144,8 @@ export const smsThreadService = {
     if (filters.status && filters.status !== "all")
       params.append("status", filters.status);
     if (filters.search) params.append("search", filters.search);
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
     params.append("limit", String(filters.limit ?? 50));
     params.append("skip", String(filters.skip ?? 0));
 

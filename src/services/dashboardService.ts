@@ -41,7 +41,7 @@ interface StatsResponse {
   };
 }
 
-function getDateRange(timeRange?: TimeRangeFilter) {
+export function getDateRange(timeRange?: TimeRangeFilter) {
   if (!timeRange || timeRange === "all") return {};
 
   const endDate = new Date();
@@ -50,11 +50,13 @@ function getDateRange(timeRange?: TimeRangeFilter) {
     startDate.setHours(0, 0, 0, 0);
   } else {
     startDate.setDate(endDate.getDate() - (timeRange === "30d" ? 29 : 6));
+    startDate.setHours(0, 0, 0, 0);
   }
+  endDate.setHours(23, 59, 59, 999);
 
   return {
-    startDate: startDate.toISOString().slice(0, 10),
-    endDate: endDate.toISOString().slice(0, 10),
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
   };
 }
 
@@ -85,11 +87,26 @@ export const dashboardService = {
     timeRange?: TimeRangeFilter;
   }): Promise<DashboardMetrics> {
     if (API_CONFIG.useMock) {
+      const dateRange = getDateRange(filters?.timeRange);
       const [threads, cdrs, suppressed, optouts] = await Promise.all([
-        smsThreadService.getThreads({ storeId: filters?.storeId }),
-        cdrService.getCdrRecords(),
-        suppressedService.getSuppressedEvents({ storeId: filters?.storeId }),
-        suppressedService.getOptOutRecords(),
+        smsThreadService.getThreads({
+          storeId: filters?.storeId,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+        }),
+        cdrService.getCdrRecords({
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+        }),
+        suppressedService.getSuppressedEvents({
+          storeId: filters?.storeId,
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+        }),
+        suppressedService.getOptOutRecords({
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+        }),
       ]);
 
       const totalCalls = cdrs.length * 9 + 18; // scaled for realistic dashboard volume
