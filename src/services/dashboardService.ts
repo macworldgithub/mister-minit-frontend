@@ -34,6 +34,7 @@ interface StatsResponse {
     deduplicationPrevented?: number;
     landlineFiltering?: number;
     answeredCallsFiltered?: number;
+    notPilotStoreFiltered?: number;
   };
   complianceAndRetention?: {
     totalOptOuts?: number;
@@ -140,6 +141,7 @@ export const dashboardService = {
         deduplicationPrevented: 0,
         landlineFiltering: 0,
         answeredCallsFiltered: 0,
+        notPilotStoreFiltered: 0,
         optOutRatePercentage: 0,
       };
     }
@@ -176,6 +178,8 @@ export const dashboardService = {
       landlineFiltering: stats.aiSafetyQualityControl?.landlineFiltering ?? 0,
       answeredCallsFiltered:
         stats.aiSafetyQualityControl?.answeredCallsFiltered ?? 0,
+      notPilotStoreFiltered:
+        stats.aiSafetyQualityControl?.notPilotStoreFiltered ?? 0,
       optOutRatePercentage: stats.complianceAndRetention?.optOutRate ?? 0,
     } satisfies DashboardMetrics;
   },

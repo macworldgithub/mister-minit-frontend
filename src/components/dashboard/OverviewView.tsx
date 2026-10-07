@@ -141,9 +141,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         <MetricCard
           label="Suppressed Events"
           value={metrics.suppressedCount}
-          subValue={`${metrics.answeredCallsFiltered ?? Math.max(0, metrics.totalCalls - metrics.missedCalls)} answered • ${metrics.optOutCount} opt-outs`}
+          subValue={
+            (metrics.notPilotStoreFiltered ?? 0) > 0
+              ? `${metrics.notPilotStoreFiltered} non-pilot • ${metrics.answeredCallsFiltered ?? 0} answered`
+              : `${metrics.answeredCallsFiltered ?? 0} answered • ${metrics.optOutCount} opt-outs`
+          }
           icon={ShieldX}
-          helperText="Calls safely skipped from SMS (staff answered, landlines, or repeat calls)"
+          helperText="Calls safely skipped from SMS (non-pilot stores, staff answered, or landlines)"
         />
         <MetricCard
           label="Opt-Out Rate"
@@ -164,7 +168,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           value={Math.max(0, metrics.totalCalls - metrics.missedCalls)}
           subValue={`${metrics.totalCalls > 0 ? (100 - (metrics.missedRatePercentage ?? 0)).toFixed(1) : 0}% handled`}
           icon={PhoneCall}
-          helperText="Inbound calls answered by store staff (no SMS needed)"
+          helperText="Inbound calls answered by store staff (75 in pilot stores)"
         />
       </div>
 
@@ -233,11 +237,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {[
-              ["Deduplication filtered", metrics.deduplicationPrevented ?? 0],
-              ["Landlines filtered", metrics.landlineFiltering ?? 0],
+              ["Non-pilot stores", metrics.notPilotStoreFiltered ?? 0],
               ["Answered calls safe", metrics.answeredCallsFiltered ?? 0],
+              ["Landlines filtered", metrics.landlineFiltering ?? 0],
+              ["Deduplication filtered", metrics.deduplicationPrevented ?? 0],
               ["Opt-outs", metrics.optOutCount],
             ].map(([label, value]) => (
               <div

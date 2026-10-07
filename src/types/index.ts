@@ -165,6 +165,7 @@ export interface DashboardMetrics {
   deduplicationPrevented?: number;
   landlineFiltering?: number;
   answeredCallsFiltered?: number;
+  notPilotStoreFiltered?: number;
   optOutRatePercentage?: number;
 }
 
