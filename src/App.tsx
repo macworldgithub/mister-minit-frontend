@@ -540,6 +540,8 @@ export function App() {
                 hasNextPage={threads.length === 50}
                 onPageChange={setThreadPage}
                 onRefresh={loadData}
+                onNavigateTab={setCurrentTab}
+                resolvedCount={closedThreads.length}
               />
             )}
 

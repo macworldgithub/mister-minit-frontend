@@ -8,7 +8,9 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  Archive,
 } from "lucide-react";
+import type { NavTab } from "../layout/Sidebar";
 
 interface ConversationsViewProps {
   threads: SmsThread[];
@@ -24,6 +26,8 @@ interface ConversationsViewProps {
   hasNextPage: boolean;
   onPageChange: (page: number) => void;
   onRefresh: () => void;
+  onNavigateTab?: (tab: NavTab) => void;
+  resolvedCount?: number;
 }
 
 export const ConversationsView: React.FC<ConversationsViewProps> = ({
@@ -39,6 +43,8 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
   hasNextPage,
   onPageChange,
   onRefresh,
+  onNavigateTab,
+  resolvedCount,
 }) => {
   const statusOptions = [
     { value: "all", label: "All Live" },
@@ -80,6 +86,36 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* Informative Concierge Scope Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-xs shadow-sm">
+        <div className="flex items-center gap-2.5">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0" />
+          <div>
+            <span className="text-white font-semibold mr-1.5">
+              Active Concierge Inbox:
+            </span>
+            <span className="text-slate-400">
+              Displaying active & ongoing inquiries ({threads.length} active threads). Completed inquiries are stored in Resolved Inquiries.
+            </span>
+          </div>
+        </div>
+        {onNavigateTab && (
+          <button
+            type="button"
+            onClick={() => onNavigateTab("closed")}
+            className="inline-flex items-center gap-1.5 text-blue-400 hover:text-blue-300 font-medium transition-colors text-xs self-start sm:self-auto cursor-pointer flex-shrink-0"
+          >
+            <Archive className="w-3.5 h-3.5" />
+            <span>View Resolved Inquiries</span>
+            {typeof resolvedCount === "number" && (
+              <span className="px-1.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] text-blue-300">
+                {resolvedCount} resolved
+              </span>
+            )}
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
       {/* Controls Bar: Search & Status Pills */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
         {/* Search Input */}

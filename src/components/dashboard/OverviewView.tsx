@@ -86,29 +86,34 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           change="+14%"
           trend="up"
           icon={PhoneCall}
+          helperText="Total customer calls received across pilot stores"
         />
         <MetricCard
           label="Missed Calls"
           value={metrics.missedCalls}
-          subValue={`${Math.round((metrics.missedCalls / (metrics.totalCalls || 1)) * 100)}%`}
+          subValue={`${Math.round((metrics.missedCalls / (metrics.totalCalls || 1)) * 100)}% of calls`}
           change="+8%"
           trend="down"
           icon={PhoneMissed}
+          helperText="Unanswered calls evaluated for SMS recovery outreach"
         />
         <MetricCard
           label="Recovered Inquiries"
           value={metrics.smsSent}
+          subValue="SMS outreach sent"
           change="Live"
           trend="up"
           icon={Send}
+          helperText="Outbound SMS threads initiated to eligible mobile callers"
         />
         <MetricCard
           label="Customer Replies"
           value={metrics.replies}
-          subValue={`${metrics.replyRatePercentage}% rate`}
+          subValue={`${metrics.replyRatePercentage}% reply rate`}
           change="+18%"
           trend="up"
           icon={MessageSquareCheck}
+          helperText="Customers who texted back into the concierge"
         />
       </div>
 
@@ -121,12 +126,14 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           change="+35%"
           trend="up"
           icon={CalendarCheck}
+          helperText="Customers with scheduled service or booking intent"
         />
         <MetricCard
           label="Store Visits"
           value={metrics.footTrafficConversions ?? 0}
           subValue="confirmed"
           icon={Store}
+          helperText="Customers confirmed visiting store during trading hours"
         />
       </div>
 
@@ -134,26 +141,30 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         <MetricCard
           label="Suppressed Events"
           value={metrics.suppressedCount}
-          subValue={`${metrics.optOutCount} opt-outs`}
+          subValue={`${metrics.answeredCallsFiltered ?? Math.max(0, metrics.totalCalls - metrics.missedCalls)} answered • ${metrics.optOutCount} opt-outs`}
           icon={ShieldX}
+          helperText="Calls safely skipped from SMS (staff answered, landlines, or repeat calls)"
         />
         <MetricCard
           label="Opt-Out Rate"
           value={`${metrics.optOutRatePercentage ?? 0}%`}
           subValue="compliance"
           icon={ShieldCheck}
+          helperText="Opt-out compliance via STOP keyword or request"
         />
         <MetricCard
           label="Missed Call Rate"
           value={`${metrics.missedRatePercentage ?? 0}%`}
           subValue="of inbound calls"
           icon={PhoneMissed}
+          helperText="Percentage of total inbound calls that were missed"
         />
         <MetricCard
-          label="Bookings Captured"
-          value={metrics.bookingsCaptured}
-          subValue={`${metrics.conversionRatePercentage}% conversion`}
-          icon={CalendarCheck}
+          label="Answered Calls"
+          value={Math.max(0, metrics.totalCalls - metrics.missedCalls)}
+          subValue={`${metrics.totalCalls > 0 ? (100 - (metrics.missedRatePercentage ?? 0)).toFixed(1) : 0}% handled`}
+          icon={PhoneCall}
+          helperText="Inbound calls answered by store staff (no SMS needed)"
         />
       </div>
 
