@@ -8,6 +8,9 @@ interface MetricCardProps {
   trend?: "up" | "down" | "neutral";
   icon: React.ElementType;
   helperText?: string;
+  badge?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({
@@ -18,15 +21,23 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   trend = "up",
   icon: Icon,
   helperText,
+  badge,
+  children,
+  className = "",
 }) => {
   return (
-    <div className="rounded-xl bg-slate-900/50 p-4 sm:p-5 border border-slate-800/60 hover:border-slate-700 transition-all duration-200 shadow-sm relative overflow-hidden group flex flex-col justify-between">
+    <div
+      className={`rounded-xl bg-slate-900/50 p-4 sm:p-5 border border-slate-800/60 hover:border-slate-700 transition-all duration-200 shadow-sm relative overflow-hidden group flex flex-col justify-between ${className}`}
+    >
       <div>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <span className="text-[11px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider block truncate">
-              {label}
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] sm:text-xs font-medium text-slate-400 uppercase tracking-wider block truncate">
+                {label}
+              </span>
+              {badge}
+            </div>
             <div className="text-xl sm:text-2xl font-bold text-white mt-1.5 sm:mt-2 tracking-tight flex flex-wrap items-baseline gap-2">
               <span>{value}</span>
               {subValue && (
@@ -47,6 +58,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
             {helperText}
           </p>
         )}
+
+        {children && <div className="mt-2.5">{children}</div>}
       </div>
 
       {change && (
