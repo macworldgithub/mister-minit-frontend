@@ -75,12 +75,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const rawDedup = metrics.deduplicationPrevented ?? 0;
   const rawOptOut = metrics.optedOutFiltered ?? metrics.optOutCount ?? 0;
   const rawInternal = metrics.internalCallsFiltered ?? 0;
-  const knownSum = rawLandlines + rawDedup + rawOptOut + rawInternal;
+  const rawAnsweredFiltered = metrics.answeredCallsFiltered ?? 0;
+  const knownSum =
+    rawLandlines +
+    rawDedup +
+    rawOptOut +
+    rawInternal +
+    rawAnsweredFiltered;
 
   let landlinesCount = rawLandlines;
   let dedupCount = rawDedup;
   let optOutCount = rawOptOut;
   let internalCount = rawInternal;
+  let answeredFilteredCount = rawAnsweredFiltered;
   let otherCount = 0;
 
   if (knownSum > 0) {
@@ -976,8 +983,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </div>
               </div>
 
-              {/* Reason 4: Internal Extensions / Other */}
-              {(internalCount > 0 || otherCount > 0) && (
+              {/* Reason 4: Internal Extensions */}
+              {internalCount > 0 && (
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 min-w-0">
                     <div className="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60 flex-shrink-0 mt-0.5">
@@ -999,10 +1006,42 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                   </div>
                   <div className="text-right flex-shrink-0 pl-2">
                     <span className="text-sm font-bold text-white block">
-                      {internalCount + otherCount}
+                      {internalCount}
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      {totalMissed > 0 ? Math.round(((internalCount + otherCount) / totalMissed) * 100) : 0}% of missed
+                      {totalMissed > 0 ? Math.round((internalCount / totalMissed) * 100) : 0}% of missed
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Reason 5: Answered / Duration-Filtered Calls */}
+              {(answeredFilteredCount > 0 || otherCount > 0) && (
+                <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 min-w-0">
+                    <div className="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60 flex-shrink-0 mt-0.5">
+                      <Clock className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-semibold text-white">
+                          Answered / Wait-Time Filtered
+                        </span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60 font-mono">
+                          not_missed_call
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        Calls answered by store personnel or historical calls filtered by duration before queue-drop detection.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0 pl-2">
+                    <span className="text-sm font-bold text-white block">
+                      {answeredFilteredCount + otherCount}
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      {totalMissed > 0 ? Math.round(((answeredFilteredCount + otherCount) / totalMissed) * 100) : 0}% of missed
                     </span>
                   </div>
                 </div>

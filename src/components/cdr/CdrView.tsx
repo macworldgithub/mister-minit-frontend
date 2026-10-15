@@ -109,14 +109,35 @@ export const CdrView: React.FC<CdrViewProps> = ({
                       {cdr.fromNo || cdr["from-no"]}
                     </td>
                     <td className="p-4">
-                      {cdr.storeName || cdr["dial-no"] || "-"}
+                      <div className="font-medium text-white">
+                        {cdr.storeName || cdr["dial-no"] || "-"}
+                      </div>
+                      {cdr.finalType === "queue" && (
+                        <div className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-mono mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                          Queue {cdr.finalNumber ? `(${cdr.finalNumber})` : ""}
+                        </div>
+                      )}
+                      {cdr.finalType === "extension" && (
+                        <div className="inline-flex items-center gap-1 text-[10px] text-blue-400 font-mono mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
+                          Agent {cdr.finalNumber ? `(${cdr.finalNumber})` : ""}
+                        </div>
+                      )}
                     </td>
                     <td className="p-4">{cdr.duration || "00:00:00"}</td>
                     <td className="p-4">
                       {missed ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-red-500/30 bg-red-500/15 px-2 py-1 text-[10px] font-bold uppercase text-red-300">
-                          <PhoneMissed className="w-3 h-3" /> Missed
-                        </span>
+                        <div>
+                          <span className="inline-flex items-center gap-1 rounded-full border border-red-500/30 bg-red-500/15 px-2 py-1 text-[10px] font-bold uppercase text-red-300">
+                            <PhoneMissed className="w-3 h-3" /> Missed
+                          </span>
+                          {cdr.missedRule === "dropped_in_queue" && (
+                            <div className="text-[10px] text-amber-400 mt-1 font-medium">
+                              Queue Drop
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full border border-slate-700/60 bg-slate-800 px-2 py-1 text-[10px] font-bold uppercase text-slate-300">
                           <ArrowDownLeft className="w-3 h-3" /> Answered

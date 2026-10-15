@@ -93,6 +93,18 @@ export interface CdrRecord {
   "from-dn"?: string;
   "dial-no": string;
   isMissed?: boolean;
+  missedRule?: string | null;
+  toNo?: string;
+  toDn?: string;
+  reasonChanged?: string;
+  finalNumber?: string;
+  finalDn?: string;
+  chain?: string;
+  fromType?: string;
+  toType?: string;
+  finalType?: string;
+  fromDispname?: string;
+  missedQueueCalls?: string;
   createdAt?: string;
   updatedAt?: string;
 }
