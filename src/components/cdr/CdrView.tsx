@@ -132,7 +132,8 @@ export const CdrView: React.FC<CdrViewProps> = ({
                           <span className="inline-flex items-center gap-1 rounded-full border border-red-500/30 bg-red-500/15 px-2 py-1 text-[10px] font-bold uppercase text-red-300">
                             <PhoneMissed className="w-3 h-3" /> Missed
                           </span>
-                          {cdr.missedRule === "dropped_in_queue" && (
+                          {(cdr.missedRule === "queue_unanswered" ||
+                            cdr.missedRule === "dropped_in_queue") && (
                             <div className="text-[10px] text-amber-400 mt-1 font-medium">
                               Queue Drop
                             </div>
