@@ -75,19 +75,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   const rawDedup = metrics.deduplicationPrevented ?? 0;
   const rawOptOut = metrics.optedOutFiltered ?? metrics.optOutCount ?? 0;
   const rawInternal = metrics.internalCallsFiltered ?? 0;
-  const rawAnsweredFiltered = metrics.answeredCallsFiltered ?? 0;
   const knownSum =
     rawLandlines +
     rawDedup +
     rawOptOut +
-    rawInternal +
-    rawAnsweredFiltered;
+    rawInternal;
 
   let landlinesCount = rawLandlines;
   let dedupCount = rawDedup;
   let optOutCount = rawOptOut;
   let internalCount = rawInternal;
-  let answeredFilteredCount = rawAnsweredFiltered;
   let otherCount = 0;
 
   if (knownSum > 0) {
@@ -172,14 +169,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               />
             </div>
 
-            <button
-              type="button"
-              onClick={() => setShowExclusionModal(true)}
-              className="w-full py-1.5 px-2.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 border border-slate-700/70 hover:border-blue-500/50 text-[11px] text-blue-400 hover:text-blue-300 transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer font-medium shadow-xs"
-            >
-              <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
-              <span>Why were {excludedCalls} calls not sent an SMS?</span>
-            </button>
+            {excludedCalls > 0 && (
+              <button
+                type="button"
+                onClick={() => setShowExclusionModal(true)}
+                className="w-full py-1.5 px-2.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 border border-slate-700/70 hover:border-blue-500/50 text-[11px] text-blue-400 hover:text-blue-300 transition-all duration-150 flex items-center justify-center gap-1.5 cursor-pointer font-medium shadow-xs"
+              >
+                <HelpCircle className="w-3.5 h-3.5 text-blue-400" />
+                <span>Why were {excludedCalls} calls not sent an SMS?</span>
+              </button>
+            )}
           </div>
         </MetricCard>
         <MetricCard
@@ -1015,8 +1014,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 </div>
               )}
 
-              {/* Reason 5: Answered / Duration-Filtered Calls */}
-              {(answeredFilteredCount > 0 || otherCount > 0) && (
+              {/* Reason 5: Other Ineligible Numbers (Private / International) */}
+              {otherCount > 0 && (
                 <div className="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3 min-w-0">
                     <div className="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700/60 flex-shrink-0 mt-0.5">
@@ -1025,23 +1024,23 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs font-semibold text-white">
-                          Answered / Wait-Time Filtered
+                          Other Ineligible Numbers
                         </span>
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60 font-mono">
-                          not_missed_call
+                          filtered
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                        Calls answered by store personnel or historical calls filtered by duration before queue-drop detection.
+                        Private caller IDs or international numbers that cannot receive domestic SMS outreach.
                       </p>
                     </div>
                   </div>
                   <div className="text-right flex-shrink-0 pl-2">
                     <span className="text-sm font-bold text-white block">
-                      {answeredFilteredCount + otherCount}
+                      {otherCount}
                     </span>
                     <span className="text-[10px] text-slate-400">
-                      {totalMissed > 0 ? Math.round(((answeredFilteredCount + otherCount) / totalMissed) * 100) : 0}% of missed
+                      {totalMissed > 0 ? Math.round((otherCount / totalMissed) * 100) : 0}% of missed
                     </span>
                   </div>
                 </div>
