@@ -124,6 +124,18 @@ export const CdrView: React.FC<CdrViewProps> = ({
                           Agent {cdr.finalNumber ? `(${cdr.finalNumber})` : ""}
                         </div>
                       )}
+                      {cdr.finalType === "voicemail" && (
+                        <div className="inline-flex items-center gap-1 text-[10px] text-purple-400 font-mono mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                          Voicemail {cdr.finalNumber ? `(${cdr.finalNumber})` : ""}
+                        </div>
+                      )}
+                      {cdr.finalType === "ivr" && (
+                        <div className="inline-flex items-center gap-1 text-[10px] text-indigo-400 font-mono mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                          IVR {cdr.finalNumber ? `(${cdr.finalNumber})` : ""}
+                        </div>
+                      )}
                     </td>
                     <td className="p-4">{cdr.duration || "00:00:00"}</td>
                     <td className="p-4">
@@ -136,6 +148,11 @@ export const CdrView: React.FC<CdrViewProps> = ({
                             cdr.missedRule === "dropped_in_queue") && (
                             <div className="text-[10px] text-amber-400 mt-1 font-medium">
                               Queue Drop
+                            </div>
+                          )}
+                          {cdr.missedRule === "voicemail" && (
+                            <div className="text-[10px] text-purple-400 mt-1 font-medium">
+                              Voicemail
                             </div>
                           )}
                         </div>
