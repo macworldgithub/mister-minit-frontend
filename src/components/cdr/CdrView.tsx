@@ -155,6 +155,11 @@ export const CdrView: React.FC<CdrViewProps> = ({
                               Voicemail
                             </div>
                           )}
+                          {cdr.missedRule === "ivr_drop" && (
+                            <div className="text-[10px] text-indigo-400 mt-1 font-medium">
+                              IVR Drop
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full border border-slate-700/60 bg-slate-800 px-2 py-1 text-[10px] font-bold uppercase text-slate-300">
