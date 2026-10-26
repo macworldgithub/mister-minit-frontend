@@ -155,7 +155,19 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
                   </span>
                 </div>
                 <p className="mt-3 truncate text-xs text-slate-300">
-                  {last?.content || "No message content"}
+                  {last?.content ? (
+                    last.content
+                  ) : thread.status === "closed_answered" ? (
+                    <span className="text-blue-300/90 font-medium">
+                      📞 Resolved via phone call with store
+                    </span>
+                  ) : thread.openingSentAt ? (
+                    <span className="text-slate-400">
+                      Outreach SMS sent · No customer reply
+                    </span>
+                  ) : (
+                    "No message content"
+                  )}
                 </p>
                 <p className="mt-2 text-[11px] text-slate-500">
                   Closed {formatDate(thread.closedAt || thread.updatedAt)}
@@ -247,6 +259,18 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
             </div>
           )}
           <div className="flex-1 space-y-4 overflow-y-auto p-5">
+            {selectedThread.status === "closed_answered" && (
+              <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5 text-xs text-blue-200 flex items-start gap-2.5">
+                <Phone className="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <strong className="text-white block font-semibold mb-0.5">
+                    Resolved on Phone Call
+                  </strong>
+                  The customer connected directly with store staff on a follow-up call. The inquiry was resolved by phone rather than SMS.
+                </div>
+              </div>
+            )}
+
             {selectedThread.conversationHistory.map((message, index) => {
               const user = message.role === "user";
               return (

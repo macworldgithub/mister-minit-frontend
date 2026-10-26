@@ -193,50 +193,89 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
             </span>
           </div>
 
-          {thread.conversationHistory.map((msg, index) => {
-            const isUser = msg.role === "user";
-            return (
-              <div
-                key={index}
-                className={`flex flex-col ${isUser ? "items-end" : "items-start"} max-w-[85%] ${
-                  isUser ? "ml-auto" : "mr-auto"
-                }`}
-              >
-                <div className="flex items-center gap-1.5 mb-1 px-1">
-                  {isUser ? (
-                    <>
-                      <span className="text-[10px] text-slate-400">
-                        {formatTimestamp(msg.sentAt)}
-                      </span>
-                      <span className="text-xs font-semibold text-slate-300 flex items-center gap-1">
-                        Customer <User className="w-3 h-3 text-blue-400" />
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-xs font-semibold text-blue-400 flex items-center gap-1">
-                        <Bot className="w-3 h-3 text-blue-400" /> Mister Minit
-                        Concierge
-                      </span>
-                      <span className="text-[10px] text-slate-400">
-                        {formatTimestamp(msg.sentAt)}
-                      </span>
-                    </>
-                  )}
-                </div>
+          {(() => {
+            const messagesToDisplay =
+              thread.conversationHistory.length > 0
+                ? thread.conversationHistory
+                : [
+                    ...(thread.openingSentAt
+                      ? [
+                          {
+                            role: "assistant" as const,
+                            content: `Hi, sorry we missed your call to Mister Minit ${thread.storeName || ""}! How can we help you today?\n\nWebsite: https://misterminit.co\nReply STOP to opt out.`,
+                            sentAt: thread.openingSentAt,
+                          },
+                        ]
+                      : []),
+                    ...(thread.followUpSentAt
+                      ? [
+                          {
+                            role: "assistant" as const,
+                            content: `Hi, just checking in from Mister Minit ${thread.storeName || ""} — did you make it into the store, or is there anything else we can help with?\nReply STOP to opt out.`,
+                            sentAt: thread.followUpSentAt,
+                          },
+                        ]
+                      : []),
+                  ];
 
+            return messagesToDisplay.map((msg, index) => {
+              const isUser = msg.role === "user";
+              const isFollowUp = !isUser && msg.content.includes("checking in");
+
+              return (
                 <div
-                  className={`p-3.5 rounded-2xl text-xs leading-relaxed ${
-                    isUser
-                      ? "bg-blue-600 text-white rounded-tr-sm shadow-md"
-                      : "bg-slate-800/60 text-slate-100 rounded-tl-sm border border-slate-700/50"
+                  key={index}
+                  className={`flex flex-col ${isUser ? "items-end" : "items-start"} max-w-[85%] ${
+                    isUser ? "ml-auto" : "mr-auto"
                   }`}
                 >
-                  {msg.content}
+                  <div className="flex items-center gap-1.5 mb-1 px-1">
+                    {isUser ? (
+                      <>
+                        <span className="text-[10px] text-slate-400">
+                          {formatTimestamp(msg.sentAt)}
+                        </span>
+                        <span className="text-xs font-semibold text-slate-300 flex items-center gap-1">
+                          Customer <User className="w-3 h-3 text-blue-400" />
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span
+                          className={`text-xs font-semibold flex items-center gap-1 ${
+                            isFollowUp ? "text-amber-400" : "text-blue-400"
+                          }`}
+                        >
+                          <Bot
+                            className={`w-3 h-3 ${
+                              isFollowUp ? "text-amber-400" : "text-blue-400"
+                            }`}
+                          />{" "}
+                          Mister Minit Concierge
+                          {isFollowUp && " (Day-3 Follow-Up)"}
+                        </span>
+                        <span className="text-[10px] text-slate-400">
+                          {formatTimestamp(msg.sentAt)}
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  <div
+                    className={`p-3.5 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
+                      isUser
+                        ? "bg-blue-600 text-white rounded-tr-sm shadow-md"
+                        : isFollowUp
+                          ? "bg-amber-950/30 text-amber-100 rounded-tl-sm border border-amber-600/30"
+                          : "bg-slate-800/60 text-slate-100 rounded-tl-sm border border-slate-700/50"
+                    }`}
+                  >
+                    {msg.content}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            });
+          })()}
         </div>
 
         {/* Message Input Bar (Concierge Reply Simulation) */}

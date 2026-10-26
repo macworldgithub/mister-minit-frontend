@@ -52,21 +52,35 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
     { value: StatusEnum.BOOKING_REQUESTED, label: "Booking Requested" },
   ];
 
-  const getStatusBadge = (status: ThreadStatus) => {
-    switch (status) {
-      case StatusEnum.BOOKING_REQUESTED:
-        return "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
-      case StatusEnum.ACTIVE:
-        return "bg-slate-800 text-slate-200 border-slate-700/80";
-      case StatusEnum.SMS_SENT:
-        return "bg-slate-800/80 text-slate-300 border-slate-700/60";
-      case StatusEnum.CLOSED_VISITED:
-        return "bg-slate-800/60 text-slate-400 border-slate-700/50";
-      case StatusEnum.CLOSED_OPTED_OUT:
-        return "bg-slate-900 text-slate-500 border-slate-800";
-      default:
-        return "bg-slate-800/60 text-slate-300 border-slate-700/60";
+  const getThreadBadge = (thread: SmsThread) => {
+    if (thread.status === StatusEnum.SMS_SENT && thread.followUpSentAt) {
+      return {
+        label: "Follow-Up Sent (Day 3)",
+        className: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+      };
     }
+    if (thread.status === StatusEnum.SMS_SENT) {
+      return {
+        label: "SMS Sent",
+        className: "bg-slate-800/80 text-slate-300 border-slate-700/60",
+      };
+    }
+    if (thread.status === StatusEnum.BOOKING_REQUESTED) {
+      return {
+        label: "Booking Requested",
+        className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+      };
+    }
+    if (thread.status === StatusEnum.ACTIVE) {
+      return {
+        label: "Active Dialogue",
+        className: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+      };
+    }
+    return {
+      label: thread.status.replace(/_/g, " "),
+      className: "bg-slate-800/60 text-slate-300 border-slate-700/60",
+    };
   };
 
   const formatTimestamp = (isoString?: string | null) => {
@@ -227,13 +241,16 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
                       </td>
 
                       <td className="py-3.5 px-4">
-                        <span
-                          className={`inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${getStatusBadge(
-                            thread.status,
-                          )}`}
-                        >
-                          {thread.status.replace(/_/g, " ")}
-                        </span>
+                        {(() => {
+                          const badgeInfo = getThreadBadge(thread);
+                          return (
+                            <span
+                              className={`inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full border ${badgeInfo.className}`}
+                            >
+                              {badgeInfo.label}
+                            </span>
+                          );
+                        })()}
                       </td>
 
                       <td className="py-3.5 px-4 max-w-xs">
@@ -241,9 +258,18 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
                           {lastMsg ? (
                             <span>
                               <strong className="text-slate-400">
-                                {lastMsg.role === "user" ? "Cust: " : "Bot: "}
+                                {lastMsg.role === "user"
+                                  ? "Cust: "
+                                  : lastMsg.content.includes("checking in")
+                                    ? "Bot (Follow-up): "
+                                    : "Bot: "}
                               </strong>
                               {lastMsg.content}
+                            </span>
+                          ) : thread.openingSentAt ? (
+                            <span>
+                              <strong className="text-slate-400">Bot: </strong>
+                              {`Hi, sorry we missed your call to Mister Minit ${thread.storeName || ""}! How can we help you today?`}
                             </span>
                           ) : (
                             <span className="italic text-slate-500">
