@@ -59,7 +59,7 @@ const badge = (status: string) => {
       className: "bg-blue-500/15 text-blue-300 border-blue-500/30",
     },
     closed_no_response: {
-      label: "No Reply (72h)",
+      label: "No Reply",
       className: "bg-slate-800 text-slate-300 border-slate-700/60",
     },
   };

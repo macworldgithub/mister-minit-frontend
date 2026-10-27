@@ -211,7 +211,7 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
                       ? [
                           {
                             role: "assistant" as const,
-                            content: `Hi, just checking in from Mister Minit ${thread.storeName || ""} — did you make it into the store, or is there anything else we can help with?\nReply STOP to opt out.`,
+                            content: `Hi, just checking in from Mister Minit ${thread.storeName || ""}! Did you still need help? I'm our smart virtual assistant and can answer anything about our services or pricing.\n\nWould you like one of our store team members to call you back instead? Reply YES\n\nReply STOP to opt out.`,
                             sentAt: thread.followUpSentAt,
                           },
                         ]
@@ -241,18 +241,14 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
                       </>
                     ) : (
                       <>
-                        <span
-                          className={`text-xs font-semibold flex items-center gap-1 ${
-                            isFollowUp ? "text-amber-400" : "text-blue-400"
-                          }`}
-                        >
-                          <Bot
-                            className={`w-3 h-3 ${
-                              isFollowUp ? "text-amber-400" : "text-blue-400"
-                            }`}
-                          />{" "}
+                        <span className="text-xs font-semibold flex items-center gap-1 text-blue-400">
+                          <Bot className="w-3 h-3 text-blue-400" />{" "}
                           Mister Minit Concierge
-                          {isFollowUp && " (Day-3 Follow-Up)"}
+                          {isFollowUp && (
+                            <span className="text-[10px] font-normal text-slate-400 ml-1">
+                              (Follow-Up)
+                            </span>
+                          )}
                         </span>
                         <span className="text-[10px] text-slate-400">
                           {formatTimestamp(msg.sentAt)}
@@ -265,9 +261,7 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
                     className={`p-3.5 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
                       isUser
                         ? "bg-blue-600 text-white rounded-tr-sm shadow-md"
-                        : isFollowUp
-                          ? "bg-amber-950/30 text-amber-100 rounded-tl-sm border border-amber-600/30"
-                          : "bg-slate-800/60 text-slate-100 rounded-tl-sm border border-slate-700/50"
+                        : "bg-slate-800/70 text-slate-100 rounded-tl-sm border border-slate-700/50"
                     }`}
                   >
                     {msg.content}
