@@ -55,20 +55,21 @@
 
   /* Custom subtle scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #0b1120;
+    background: rgba(11, 17, 32, 0.6);
+    border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1e293b;
+    background: #334155;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #334155;
+    background: #475569;
   }
 }

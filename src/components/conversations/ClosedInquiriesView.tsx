@@ -106,9 +106,9 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-[minmax(330px,0.92fr)_minmax(0,1.08fr)] gap-5 xl:h-[calc(100vh-9.5rem)] min-h-[580px]">
+    <div className="grid grid-cols-1 xl:grid-cols-[minmax(330px,0.92fr)_minmax(0,1.08fr)] gap-5 xl:h-[calc(100vh-9.5rem)] xl:max-h-[calc(100vh-9.5rem)]">
       {/* Left Column: Inquiry Thread List */}
-      <section className="min-w-0 flex flex-col xl:h-full space-y-3">
+      <section className="min-w-0 flex flex-col h-full min-h-0 space-y-3">
         {/* Pinned Controls: Search & Filter Pills */}
         <div className="flex flex-col gap-3 flex-shrink-0">
           <div className="relative">
@@ -151,8 +151,14 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
           </div>
         )}
 
-        {/* Scrollable list of inquiries */}
-        <div className="flex-1 min-h-0 overflow-y-auto pr-1 space-y-2.5 max-h-[520px] xl:max-h-none">
+        {/* Scrollable list of inquiries with dedicated visible scroller */}
+        <div
+          className="flex-1 min-h-0 overflow-y-auto pr-2 space-y-2.5 max-h-[calc(100vh-19rem)] min-h-[380px]"
+          style={{
+            scrollbarWidth: "thin",
+            scrollbarColor: "#475569 #0f172a",
+          }}
+        >
           {threads.length === 0 && !loading ? (
             <div className="rounded-xl border border-slate-800/60 bg-slate-900/50 py-14 text-center text-xs text-slate-500">
               <MessageSquare className="w-8 h-8 mx-auto mb-2 text-slate-600" />
@@ -246,7 +252,7 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
       {/* Right Column: Chat Details / Archive View */}
       <section
         ref={chatSectionRef}
-        className="min-w-0 flex flex-col h-[550px] xl:h-full rounded-xl border border-slate-800/60 bg-slate-900/50 overflow-hidden shadow-sm"
+        className="min-w-0 flex flex-col h-full min-h-0 rounded-xl border border-slate-800/60 bg-slate-900/50 overflow-hidden shadow-sm"
       >
         {!selectedThread ? (
           <div className="h-full min-h-[450px] flex items-center justify-center text-center text-xs text-slate-500 p-6">
@@ -317,6 +323,10 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
             <div
               ref={chatMessagesRef}
               className="flex-1 min-h-0 space-y-4 overflow-y-auto p-4 sm:p-5"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "#475569 #0f172a",
+              }}
             >
               {selectedThread.status === "closed_answered" && (
                 <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-3.5 text-xs text-blue-200 flex items-start gap-2.5">
