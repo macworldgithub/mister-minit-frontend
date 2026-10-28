@@ -35,15 +35,16 @@ export const CdrView: React.FC<CdrViewProps> = ({
   hasNextPage,
   onPageChange,
 }) => (
-  <div className="space-y-6">
-    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+  <div className="flex flex-col space-y-4 lg:h-[calc(100vh-9.5rem)] min-h-[580px]">
+    {/* Pinned Top Bar: Search & Filter Dropdown */}
+    <div className="flex-shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
       <div className="relative flex-1 max-w-md">
         <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
         <input
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search caller number, call ID, reason..."
-          className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-500 outline-none"
+          className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-500 outline-none transition-colors"
         />
       </div>
       <select
@@ -51,36 +52,40 @@ export const CdrView: React.FC<CdrViewProps> = ({
         onChange={(e) =>
           onStatusFilterChange(e.target.value as "all" | "missed" | "answered")
         }
-        className="bg-slate-900/50 border border-slate-800/60 text-slate-300 rounded-xl px-3 py-2 text-xs"
+        className="bg-slate-900/50 border border-slate-800/60 text-slate-300 rounded-xl px-3 py-2 text-xs cursor-pointer focus:border-blue-500/60 outline-none"
       >
         <option value="all">All Calls</option>
         <option value="missed">Missed Only</option>
         <option value="answered">Answered Only</option>
       </select>
     </div>
+
     {error && (
-      <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
+      <div className="flex-shrink-0 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-300">
         {error}
       </div>
     )}
+
     {loading && (
-      <div className="flex items-center gap-2 text-xs text-slate-400">
+      <div className="flex-shrink-0 flex items-center gap-2 text-xs text-slate-400">
         <RefreshCw className="w-4 h-4 animate-spin" /> Loading live 3CX call
         logs...
       </div>
     )}
-    <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl overflow-hidden shadow-sm">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px] text-left text-xs">
-          <thead className="bg-slate-900/80 border-b border-slate-800/60 text-slate-400 uppercase text-[10px]">
+
+    {/* Scrollable Table Card with Sticky Header */}
+    <div className="flex-1 min-h-0 bg-slate-900/50 border border-slate-800/60 rounded-xl overflow-hidden shadow-sm flex flex-col">
+      <div className="flex-1 min-h-0 overflow-auto">
+        <table className="w-full min-w-[900px] text-left text-xs border-collapse">
+          <thead className="sticky top-0 z-10 bg-slate-900 border-b border-slate-800/80 text-slate-400 uppercase text-[10px] tracking-wider shadow-sm">
             <tr>
-              <th className="p-4">Call ID</th>
-              <th className="p-4">Date & Time</th>
-              <th className="p-4">Caller Number</th>
-              <th className="p-4">Store Name</th>
-              <th className="p-4">Duration</th>
-              <th className="p-4">Status</th>
-              <th className="p-4">Reason Terminated</th>
+              <th className="p-4 bg-slate-900 font-semibold">Call ID</th>
+              <th className="p-4 bg-slate-900 font-semibold">Date & Time</th>
+              <th className="p-4 bg-slate-900 font-semibold">Caller Number</th>
+              <th className="p-4 bg-slate-900 font-semibold">Store Name</th>
+              <th className="p-4 bg-slate-900 font-semibold">Duration</th>
+              <th className="p-4 bg-slate-900 font-semibold">Status</th>
+              <th className="p-4 bg-slate-900 font-semibold">Reason Terminated</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/40">
@@ -97,7 +102,7 @@ export const CdrView: React.FC<CdrViewProps> = ({
                 return (
                   <tr
                     key={cdr.callid}
-                    className="hover:bg-slate-800/30 text-slate-300"
+                    className="hover:bg-slate-800/30 text-slate-300 transition-colors"
                   >
                     <td className="p-4 font-semibold text-white">
                       {cdr.callId || cdr.callid}
@@ -178,26 +183,32 @@ export const CdrView: React.FC<CdrViewProps> = ({
         </table>
       </div>
     </div>
-    <div className="flex items-center justify-end gap-2">
-      <span className="text-[11px] text-slate-500">Page {page}</span>
-      <button
-        type="button"
-        title="Previous page"
-        disabled={page <= 1}
-        onClick={() => onPageChange(page - 1)}
-        className="p-2 rounded-lg border border-slate-800 text-slate-400 disabled:opacity-40"
-      >
-        <ChevronLeft className="w-4 h-4" />
-      </button>
-      <button
-        type="button"
-        title="Next page"
-        disabled={!hasNextPage}
-        onClick={() => onPageChange(page + 1)}
-        className="p-2 rounded-lg border border-slate-800 text-slate-400 disabled:opacity-40"
-      >
-        <ChevronRight className="w-4 h-4" />
-      </button>
+
+    {/* Pinned Pagination Controls */}
+    <div className="flex-shrink-0 flex items-center justify-between border-t border-slate-800/50 pt-2 px-1">
+      <span className="text-[11px] text-slate-500">
+        Page {page} {cdrs.length > 0 && `(${cdrs.length} records)`}
+      </span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          title="Previous page"
+          disabled={page <= 1}
+          onClick={() => onPageChange(page - 1)}
+          className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800/60 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <button
+          type="button"
+          title="Next page"
+          disabled={!hasNextPage}
+          onClick={() => onPageChange(page + 1)}
+          className="p-2 rounded-lg border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800/60 disabled:opacity-30 disabled:hover:bg-transparent transition-colors cursor-pointer"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   </div>
 );

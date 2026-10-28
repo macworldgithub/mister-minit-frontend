@@ -184,17 +184,17 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
 
       {/* Threads Table */}
       <div className="bg-slate-900/50 border border-slate-800/60 rounded-xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-900/80 border-b border-slate-800/60 text-slate-400 uppercase font-semibold text-[10px] tracking-wider">
+        <div className="overflow-x-auto max-h-[calc(100vh-22rem)] min-h-[400px] overflow-y-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead className="sticky top-0 z-10 bg-slate-900 border-b border-slate-800/80 text-slate-400 uppercase font-semibold text-[10px] tracking-wider shadow-sm">
               <tr>
-                <th className="py-3.5 px-4">Caller / Customer</th>
-                <th className="py-3.5 px-4">Store & DID</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4">Latest Message</th>
-                <th className="py-3.5 px-4">Booking Info</th>
-                <th className="py-3.5 px-4">Last Activity</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
+                <th className="py-3.5 px-4 bg-slate-900">Caller / Customer</th>
+                <th className="py-3.5 px-4 bg-slate-900">Store & DID</th>
+                <th className="py-3.5 px-4 bg-slate-900">Status</th>
+                <th className="py-3.5 px-4 bg-slate-900">Latest Message</th>
+                <th className="py-3.5 px-4 bg-slate-900">Booking Info</th>
+                <th className="py-3.5 px-4 bg-slate-900">Last Activity</th>
+                <th className="py-3.5 px-4 bg-slate-900 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/40">
