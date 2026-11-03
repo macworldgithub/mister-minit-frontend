@@ -29,6 +29,8 @@ interface ClosedInquiriesViewProps {
 const statuses = [
   ["all", "All Resolved"],
   ["closed_visited", "Confirmed In-Store Visit"],
+  ["closed_callback", "Callback Dispatched"],
+  ["closed_completed", "Resolved via SMS"],
   ["closed_answered", "Resolved by Phone"],
   ["closed_no_response", "No Customer Reply"],
 ] as const;
@@ -57,6 +59,14 @@ const badge = (status: string) => {
     closed_answered: {
       label: "Resolved on Call",
       className: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+    },
+    closed_callback: {
+      label: "Callback Dispatched",
+      className: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+    },
+    closed_completed: {
+      label: "Resolved via SMS",
+      className: "bg-teal-500/15 text-teal-300 border-teal-500/30",
     },
     closed_no_response: {
       label: "No Reply",
@@ -338,6 +348,32 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
                     The customer connected directly with store staff on a
                     follow-up call. The inquiry was resolved by phone rather than
                     SMS.
+                  </div>
+                </div>
+              )}
+
+              {selectedThread.status === "closed_callback" && (
+                <div className="rounded-xl border border-purple-500/30 bg-purple-500/10 p-3.5 text-xs text-purple-200 flex items-start gap-2.5">
+                  <Phone className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <strong className="text-white block font-semibold mb-0.5">
+                      Staff Callback Dispatched
+                    </strong>
+                    The customer requested a phone callback. Store staff was
+                    notified via SMS and email to follow up directly.
+                  </div>
+                </div>
+              )}
+
+              {selectedThread.status === "closed_completed" && (
+                <div className="rounded-xl border border-teal-500/30 bg-teal-500/10 p-3.5 text-xs text-teal-200 flex items-start gap-2.5">
+                  <MessageSquare className="w-4 h-4 text-teal-400 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <strong className="text-white block font-semibold mb-0.5">
+                      Inquiry Resolved via SMS
+                    </strong>
+                    The customer inquiry concluded via SMS Concierge and closed
+                    after 45 minutes of inactivity.
                   </div>
                 </div>
               )}

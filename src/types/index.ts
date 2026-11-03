@@ -8,6 +8,8 @@ export const ThreadStatus = {
   CLOSED_NO_RESPONSE: "closed_no_response",
   CLOSED_OPTED_OUT: "closed_opted_out",
   CLOSED_ANSWERED: "closed_answered",
+  CLOSED_CALLBACK: "closed_callback",
+  CLOSED_COMPLETED: "closed_completed",
 } as const;
 
 export type ThreadStatus = (typeof ThreadStatus)[keyof typeof ThreadStatus];

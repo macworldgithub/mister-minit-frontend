@@ -41,6 +41,10 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
         return "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
       case StatusEnum.ACTIVE:
         return "bg-slate-800 text-slate-200 border-slate-700/80";
+      case StatusEnum.CLOSED_CALLBACK:
+        return "bg-purple-500/15 text-purple-300 border-purple-500/30";
+      case StatusEnum.CLOSED_COMPLETED:
+        return "bg-teal-500/15 text-teal-300 border-teal-500/30";
       case StatusEnum.CLOSED_VISITED:
         return "bg-slate-800/80 text-slate-300 border-slate-700/60";
       case StatusEnum.CLOSED_OPTED_OUT:
@@ -174,6 +178,12 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
             </option>
             <option value={StatusEnum.CLOSED_ANSWERED}>
               Closed — Phone Answered
+            </option>
+            <option value={StatusEnum.CLOSED_CALLBACK}>
+              Closed — Callback Dispatched
+            </option>
+            <option value={StatusEnum.CLOSED_COMPLETED}>
+              Closed — Resolved via SMS
             </option>
             {/* <option value={StatusEnum.CLOSED_NO_RESPONSE}>
               Closed — No Response

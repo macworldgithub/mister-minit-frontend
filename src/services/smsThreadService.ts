@@ -19,6 +19,8 @@ export type ClosedThreadStatus =
   | "all"
   | "closed_visited"
   | "closed_answered"
+  | "closed_callback"
+  | "closed_completed"
   | "closed_no_response"
   | "closed_opted_out";
 

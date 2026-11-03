@@ -59,6 +59,18 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
         className: "bg-purple-500/15 text-purple-300 border-purple-500/30",
       };
     }
+    if (thread.status === StatusEnum.BOOKING_REQUESTED) {
+      return {
+        label: "Booking Requested",
+        className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+      };
+    }
+    if (thread.status === StatusEnum.ACTIVE || thread.customerReplied) {
+      return {
+        label: "Active Dialogue",
+        className: "bg-blue-500/15 text-blue-300 border-blue-500/30",
+      };
+    }
     if (thread.status === StatusEnum.SMS_SENT && thread.followUpSentAt) {
       return {
         label: "Follow-Up Sent",
@@ -69,18 +81,6 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
       return {
         label: "SMS Sent",
         className: "bg-slate-800/80 text-slate-300 border-slate-700/60",
-      };
-    }
-    if (thread.status === StatusEnum.BOOKING_REQUESTED) {
-      return {
-        label: "Booking Requested",
-        className: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-      };
-    }
-    if (thread.status === StatusEnum.ACTIVE) {
-      return {
-        label: "Active Dialogue",
-        className: "bg-blue-500/15 text-blue-300 border-blue-500/30",
       };
     }
     return {
