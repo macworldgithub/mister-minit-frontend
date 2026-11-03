@@ -53,6 +53,12 @@ export const ConversationsView: React.FC<ConversationsViewProps> = ({
   ];
 
   const getThreadBadge = (thread: SmsThread) => {
+    if (thread.callbackRequested) {
+      return {
+        label: "Callback Requested",
+        className: "bg-purple-500/15 text-purple-300 border-purple-500/30",
+      };
+    }
     if (thread.status === StatusEnum.SMS_SENT && thread.followUpSentAt) {
       return {
         label: "Follow-Up Sent",

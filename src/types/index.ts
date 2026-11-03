@@ -38,6 +38,8 @@ export interface SmsThread {
   openingSentAt: string | null;
   lastInteractionAt: string | null;
   followUpSentAt: string | null;
+  callbackRequested?: boolean;
+  callbackRequestedAt?: string | null;
   bookingCaptured: boolean;
   bookingDetails: BookingDetails | null;
   optedOut: boolean;
