@@ -285,7 +285,7 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
                     <Phone className="w-4 h-4 text-blue-400" />
                     {formatPhone(selectedThread.callerNumber)}
                   </h3>
-                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
                     <span className="flex items-center gap-1">
                       <Store className="w-3.5 h-3.5 text-blue-400" />{" "}
                       {selectedThread.storeName || "Unknown store"}
@@ -294,7 +294,7 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
                     <span>Called {formatDate(selectedThread.createdAt)}</span>
                     <span>·</span>
                     <span>Closed {formatDate(selectedThread.closedAt || selectedThread.updatedAt)}</span>
-                  </p>
+                  </div>
                 </div>
                 <span
                   className={`rounded-full border px-3 py-1 text-xs font-semibold ${badge(selectedThread.status).className}`}
