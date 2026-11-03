@@ -204,29 +204,27 @@ export const ThreadDrawer: React.FC<ThreadDrawerProps> = ({
           </div>
 
           {(() => {
-            const messagesToDisplay =
-              thread.conversationHistory.length > 0
-                ? thread.conversationHistory
-                : [
-                    ...(thread.openingSentAt
-                      ? [
-                          {
-                            role: "assistant" as const,
-                            content: `Hi, sorry we missed your call to Mister Minit ${thread.storeName || ""}! How can we help you today?\n\nWebsite: https://misterminit.co\nReply STOP to opt out.`,
-                            sentAt: thread.openingSentAt,
-                          },
-                        ]
-                      : []),
-                    ...(thread.followUpSentAt
-                      ? [
-                          {
-                            role: "assistant" as const,
-                            content: `Hi, just checking in from Mister Minit ${thread.storeName || ""}! Did you still need help? I'm our smart virtual assistant and can answer anything about our services or pricing.\n\nWould you like one of our store team members to call you back instead? Reply YES\n\nReply STOP to opt out.`,
-                            sentAt: thread.followUpSentAt,
-                          },
-                        ]
-                      : []),
-                  ];
+            const history = thread.conversationHistory || [];
+            const hasOpening = history.some(
+              (m) =>
+                m.role === "assistant" &&
+                (m.content.includes("missed your call") ||
+                  m.content.includes("How can we help")),
+            );
+            const messagesToDisplay = [...history];
+            if (!hasOpening && thread.openingSentAt) {
+              const rawName = thread.storeName?.trim() || "";
+              const displayName = !rawName
+                ? "Mister Minit"
+                : /^mister\s+minit/i.test(rawName)
+                ? rawName
+                : `Mister Minit ${rawName}`;
+              messagesToDisplay.unshift({
+                role: "assistant" as const,
+                content: `Hi, sorry we missed your call to ${displayName}! How can we help you today?\n\nWebsite: https://misterminit.co\nReply STOP to opt out.`,
+                sentAt: thread.openingSentAt,
+              });
+            }
 
             return messagesToDisplay.map((msg, index) => {
               const isUser = msg.role === "user";

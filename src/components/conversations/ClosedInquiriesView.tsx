@@ -378,53 +378,81 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
                 </div>
               )}
 
-              {selectedThread.conversationHistory.length === 0 &&
-                selectedThread.status !== "closed_answered" && (
-                  <div className="rounded-xl border border-slate-800/60 bg-slate-900/60 p-4 text-center text-xs text-slate-500">
-                    {selectedThread.openingSentAt ? (
-                      <div>
-                        <p className="text-slate-400 mb-1 font-medium">
-                          Initial Outreach SMS Sent
-                        </p>
-                        <p className="text-slate-500 text-[11px]">
-                          Sent on {formatDate(selectedThread.openingSentAt)}. No
-                          customer reply was received before this inquiry was
-                          closed.
-                        </p>
-                      </div>
-                    ) : (
-                      "No message history recorded for this inquiry."
-                    )}
-                  </div>
-                )}
+              {(() => {
+                const history = selectedThread.conversationHistory || [];
+                const hasOpening = history.some(
+                  (m) =>
+                    m.role === "assistant" &&
+                    (m.content.includes("missed your call") ||
+                      m.content.includes("How can we help")),
+                );
+                const displayMessages = [...history];
+                if (!hasOpening && selectedThread.openingSentAt) {
+                  const rawName = selectedThread.storeName?.trim() || "";
+                  const displayName = !rawName
+                    ? "Mister Minit"
+                    : /^mister\s+minit/i.test(rawName)
+                    ? rawName
+                    : `Mister Minit ${rawName}`;
+                  displayMessages.unshift({
+                    role: "assistant",
+                    content: `Hi, sorry we missed your call to ${displayName}! How can we help you today?\n\nWebsite: https://misterminit.co\nReply STOP to opt out.`,
+                    sentAt: selectedThread.openingSentAt,
+                  });
+                }
 
-              {selectedThread.conversationHistory.map((message, index) => {
-                const user = message.role === "user";
-                return (
-                  <div
-                    key={`${message.sentAt}-${index}`}
-                    className={`flex ${user ? "justify-end" : "justify-start"}`}
-                  >
+                if (
+                  displayMessages.length === 0 &&
+                  selectedThread.status !== "closed_answered"
+                ) {
+                  return (
+                    <div className="rounded-xl border border-slate-800/60 bg-slate-900/60 p-4 text-center text-xs text-slate-500">
+                      {selectedThread.openingSentAt ? (
+                        <div>
+                          <p className="text-slate-400 mb-1 font-medium">
+                            Initial Outreach SMS Sent
+                          </p>
+                          <p className="text-slate-500 text-[11px]">
+                            Sent on {formatDate(selectedThread.openingSentAt)}. No
+                            customer reply was received before this inquiry was
+                            closed.
+                          </p>
+                        </div>
+                      ) : (
+                        "No message history recorded for this inquiry."
+                      )}
+                    </div>
+                  );
+                }
+
+                return displayMessages.map((message, index) => {
+                  const user = message.role === "user";
+                  return (
                     <div
-                      className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs leading-relaxed ${
-                        user
-                          ? "rounded-tr-sm bg-blue-600 text-white"
-                          : "rounded-tl-sm border border-slate-700/50 bg-slate-800/70 text-slate-100"
-                      }`}
+                      key={`${message.sentAt}-${index}`}
+                      className={`flex ${user ? "justify-end" : "justify-start"}`}
                     >
-                      <p className="whitespace-pre-wrap">{message.content}</p>
-                      <p
-                        className={`mt-2 text-[10px] ${
-                          user ? "text-blue-100" : "text-slate-400"
+                      <div
+                        className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs leading-relaxed ${
+                          user
+                            ? "rounded-tr-sm bg-blue-600 text-white"
+                            : "rounded-tl-sm border border-slate-700/50 bg-slate-800/70 text-slate-100"
                         }`}
                       >
-                        {user ? "Customer" : "Mister Minit Concierge"} ·{" "}
-                        {formatDate(message.sentAt)}
-                      </p>
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                        <p
+                          className={`mt-2 text-[10px] ${
+                            user ? "text-blue-100" : "text-slate-400"
+                          }`}
+                        >
+                          {user ? "Customer" : "Mister Minit Concierge"} ·{" "}
+                          {formatDate(message.sentAt)}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                });
+              })()}
             </div>
 
             {/* Chat Footer */}
