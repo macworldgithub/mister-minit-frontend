@@ -97,6 +97,62 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
 }) => {
   const chatMessagesRef = React.useRef<HTMLDivElement>(null);
   const chatSectionRef = React.useRef<HTMLElement>(null);
+  const sliderRef = React.useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
+  const [canScrollRight, setCanScrollRight] = React.useState(false);
+
+  const updateScrollButtons = React.useCallback(() => {
+    const el = sliderRef.current;
+    if (!el) return;
+    const atStart = el.scrollLeft <= 2;
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 2;
+    setCanScrollLeft(!atStart);
+    setCanScrollRight(!atEnd);
+  }, []);
+
+  React.useEffect(() => {
+    updateScrollButtons();
+    const el = sliderRef.current;
+    if (!el) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateScrollButtons();
+    });
+    resizeObserver.observe(el);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [updateScrollButtons]);
+
+  // Center active filter pill if changed
+  React.useEffect(() => {
+    const el = sliderRef.current;
+    if (!el) return;
+    const activeBtn = el.querySelector<HTMLButtonElement>(`[data-active="true"]`);
+    if (activeBtn) {
+      activeBtn.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
+    }
+  }, [statusFilter]);
+
+  const scrollSlider = (direction: "left" | "right") => {
+    const el = sliderRef.current;
+    if (!el) return;
+    const offset = direction === "left" ? -180 : 180;
+    el.scrollBy({ left: offset, behavior: "smooth" });
+  };
+
+  const handleSliderWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    const el = sliderRef.current;
+    if (!el) return;
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      el.scrollLeft += e.deltaY;
+    }
+  };
 
   // Auto-scroll chat messages to bottom whenever selected thread changes
   React.useEffect(() => {
@@ -130,21 +186,67 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
               className="w-full bg-slate-950/60 border border-slate-800/60 focus:border-blue-500/60 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-slate-500 outline-none transition-colors"
             />
           </div>
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-            {statuses.map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => onStatusFilterChange(value)}
-                className={`whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
-                  statusFilter === value
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-slate-900/50 border border-slate-800/60 text-slate-300 hover:bg-slate-800/60"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+          <div className="flex items-center gap-1.5 w-full">
+            <button
+              type="button"
+              onClick={() => scrollSlider("left")}
+              disabled={!canScrollLeft}
+              aria-label="Previous filter options"
+              title={canScrollLeft ? "Scroll left" : undefined}
+              className={`flex-shrink-0 w-6 h-7 rounded-lg flex items-center justify-center transition-all ${
+                canScrollLeft
+                  ? "bg-slate-900 border border-slate-700/80 text-slate-200 hover:bg-slate-800 hover:text-white shadow-sm cursor-pointer"
+                  : "opacity-20 text-slate-600 border border-slate-800/30 cursor-not-allowed"
+              }`}
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+
+            <div
+              ref={sliderRef}
+              onScroll={updateScrollButtons}
+              onWheel={handleSliderWheel}
+              className="flex-1 flex gap-1.5 overflow-x-auto py-1 scroll-smooth scrollbar-none"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {statuses.map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  data-active={statusFilter === value ? "true" : "false"}
+                  onClick={(e) => {
+                    onStatusFilterChange(value);
+                    e.currentTarget.scrollIntoView({
+                      behavior: "smooth",
+                      block: "nearest",
+                      inline: "center",
+                    });
+                  }}
+                  className={`whitespace-nowrap flex-shrink-0 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
+                    statusFilter === value
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "bg-slate-900/50 border border-slate-800/60 text-slate-300 hover:bg-slate-800/60"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => scrollSlider("right")}
+              disabled={!canScrollRight}
+              aria-label="Next filter options"
+              title={canScrollRight ? "Scroll right for more options" : undefined}
+              className={`flex-shrink-0 w-6 h-7 rounded-lg flex items-center justify-center transition-all ${
+                canScrollRight
+                  ? "bg-slate-900 border border-slate-700/80 text-slate-200 hover:bg-slate-800 hover:text-white shadow-sm cursor-pointer"
+                  : "opacity-20 text-slate-600 border border-slate-800/30 cursor-not-allowed"
+              }`}
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
