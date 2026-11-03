@@ -222,9 +222,10 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
                       "No message content"
                     )}
                   </p>
-                  <p className="mt-2 text-[11px] text-slate-500">
-                    Closed {formatDate(thread.closedAt || thread.updatedAt)}
-                  </p>
+                  <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+                    <span>Called {formatDate(thread.createdAt)}</span>
+                    <span>Closed {formatDate(thread.closedAt || thread.updatedAt)}</span>
+                  </div>
                 </button>
               );
             })
@@ -284,12 +285,15 @@ export const ClosedInquiriesView: React.FC<ClosedInquiriesViewProps> = ({
                     <Phone className="w-4 h-4 text-blue-400" />
                     {formatPhone(selectedThread.callerNumber)}
                   </h3>
-                  <p className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-                    <Store className="w-3.5 h-3.5 text-blue-400" />{" "}
-                    {selectedThread.storeName || "Unknown store"} ·{" "}
-                    {formatDate(
-                      selectedThread.closedAt || selectedThread.updatedAt,
-                    )}
+                  <p className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+                    <span className="flex items-center gap-1">
+                      <Store className="w-3.5 h-3.5 text-blue-400" />{" "}
+                      {selectedThread.storeName || "Unknown store"}
+                    </span>
+                    <span>·</span>
+                    <span>Called {formatDate(selectedThread.createdAt)}</span>
+                    <span>·</span>
+                    <span>Closed {formatDate(selectedThread.closedAt || selectedThread.updatedAt)}</span>
                   </p>
                 </div>
                 <span
