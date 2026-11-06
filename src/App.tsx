@@ -34,6 +34,21 @@ import type {
 import { ThreadStatus as StatusEnum } from "./types";
 import "./App.css";
 
+const BLOCKED_NUMBERS_FE = new Set([
+  "0405434292",
+  "61405434292",
+  "+61405434292",
+  "0406500312",
+  "61406500312",
+  "+61406500312",
+]);
+
+const isBlockedInFrontend = (num?: string | null) => {
+  if (!num) return false;
+  const digits = num.replace(/\D/g, "");
+  return BLOCKED_NUMBERS_FE.has(num.trim()) || BLOCKED_NUMBERS_FE.has(digits);
+};
+
 export function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>("overview");
   const [selectedStoreId, setSelectedStoreId] = useState<string>("all");
@@ -224,30 +239,48 @@ export function App() {
         dashboardService.getRecentLogs(logsPage),
       ]);
       if (threadsResult.status === "fulfilled") {
-        if (closedThreadsResult.status === "fulfilled") {
-          setClosedThreads(closedThreadsResult.value);
-          setActiveClosedThread((current) =>
-            current
-              ? closedThreadsResult.value.find(
-                  (thread) => thread._id === current._id,
-                ) || null
-              : closedThreadsResult.value[0] || null,
-          );
-        }
-        setThreads(threadsResult.value);
+        const filteredLive = threadsResult.value.filter(
+          (t) => !isBlockedInFrontend(t.callerNumber),
+        );
+        setThreads(filteredLive);
         setActiveThread((curr) => {
           if (!curr) return null;
-          return threadsResult.value.find((t) => t._id === curr._id) || curr;
+          return filteredLive.find((t) => t._id === curr._id) || curr;
         });
       }
+      if (closedThreadsResult.status === "fulfilled") {
+        const filteredClosed = closedThreadsResult.value.filter(
+          (t) => !isBlockedInFrontend(t.callerNumber),
+        );
+        setClosedThreads(filteredClosed);
+        setActiveClosedThread((current) =>
+          current
+            ? filteredClosed.find((thread) => thread._id === current._id) ||
+              null
+            : filteredClosed[0] || null,
+        );
+      }
       if (cdrsResult.status === "fulfilled") {
-        setCdrs(cdrsResult.value);
+        setCdrs(
+          cdrsResult.value.filter(
+            (c) =>
+              !isBlockedInFrontend((c as any)["from-no"] || c.fromNo),
+          ),
+        );
       }
       if (suppressedResult.status === "fulfilled") {
-        setSuppressedEvents(suppressedResult.value);
+        setSuppressedEvents(
+          suppressedResult.value.filter(
+            (e) => !isBlockedInFrontend(e.callerNumber),
+          ),
+        );
       }
       if (optoutsResult.status === "fulfilled") {
-        setOptOutRecords(optoutsResult.value);
+        setOptOutRecords(
+          optoutsResult.value.filter(
+            (o) => !isBlockedInFrontend(o.callerNumber),
+          ),
+        );
       }
       if (metricsResult.status === "fulfilled") {
         setMetrics(metricsResult.value);
